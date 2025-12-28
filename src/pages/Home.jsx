@@ -37,6 +37,7 @@ function Home() {
             console.log("Error in fetching events: ", error);
         }
     }, [])
+    
     return (
         <div className="flex">
             <div className="flex-1 p-2">

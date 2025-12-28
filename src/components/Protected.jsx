@@ -9,10 +9,10 @@ function Protected({children,authentication = true}){
     
     useEffect(()=>{
         if(authentication && authStatus!==authentication){
-            navigate('/login');
+          navigate('/login');
         }
         else if(!authentication && authStatus){
-            navigate('/')
+          navigate('/dashboard',{replace:true})
         }
         setLoader(false);
     },[navigate,authStatus,authentication])

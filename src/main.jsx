@@ -7,7 +7,7 @@ import Store from './store/store.js'
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import Home from "./pages/Home.jsx"
 import Login from "./pages/Login.jsx"
-import Signup from "./pages/ram.jsx"
+import Signup from "./pages/Signup.jsx"
 import Dashboard from './pages/Dashboard.jsx'
 import AllSocieties from './pages/AllSocieties.jsx'
 import Protected from './components/Protected.jsx'
