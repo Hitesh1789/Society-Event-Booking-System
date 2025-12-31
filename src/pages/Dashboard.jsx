@@ -1,22 +1,39 @@
 import { Card } from "@/components/ui/card"
 import { Users, CalendarDays, ClipboardCheck, MessageSquareMore } from "lucide-react"
 import { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 import { getAllUpcomingEvents } from "../api/events.api";
-import { getMyRegisterations } from "../api/eventRegsiter";
+import { getMyRegisterations } from "../api/eventRegsiter.api";
+import { clearEvents, addEvents } from "../store/eventSlice";
 
 export default function Dashboard() {
   const userData = useSelector((state) => state.auth.userData)
-  const [upcomingEvents, setUpcomingEvents] = useState(0);
+  const events = useSelector((state) => state.event.events);
   const [myRegisterations, setMyRegisterations] = useState(0);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (events.length > 0) return   // STOP API CALL
+    (async () => {
+      try {
+        const fetchedEvents = await getAllUpcomingEvents();
+        if (fetchedEvents.data.data) {
+          dispatch(addEvents({ events: fetchedEvents.data.data }))
+        }
+        else {
+          dispatch(clearEvents())
+        }
+      }
+      catch (error) {
+        console.log("Error while fetching all socities: ", error)
+      }
+    })();
+  }, [events.length])
 
   useEffect(() => {
     if (!userData) return;
     const fetchData = async () => {
       try {
-        const fetchedEvents = await getAllUpcomingEvents()
-        setUpcomingEvents(fetchedEvents.data.data.length);
-
         const fetchedRegistrations = await getMyRegisterations();
         setMyRegisterations(fetchedRegistrations.data.data.getMyRegisterations.length)
       }
@@ -37,7 +54,7 @@ export default function Dashboard() {
     },
     {
       title: "Upcoming Events",
-      value: upcomingEvents,
+      value: events.length,
       subtitle: "Across all societies",
       icon: CalendarDays,
       color: "text-blue-600 bg-blue-100"
@@ -79,7 +96,7 @@ export default function Dashboard() {
           </Card>
         ))}
         {
-          (userData?.profile.role == 'president' || userData?.profile.role == 'admin') ? (
+          (userData.societies.some((s) => s.society_role === "president") || userData?.profile.role == 'admin') ? (
             <Card
               className="p-3 text-center rounded-2xl shadow-sm hover:shadow-md transition-shadow border"
             >
@@ -97,7 +114,7 @@ export default function Dashboard() {
           ) : null
         }
         {
-          (userData?.profile.role == 'lead' || userData?.profile.role == 'admin') ? (
+          (userData.societies.some((s) => s.society_role === "lead") || userData?.profile.role == 'admin') ? (
             <Card
               className="p-3 text-center rounded-2xl shadow-sm hover:shadow-md transition-shadow border"
             >

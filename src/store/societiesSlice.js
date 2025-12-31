@@ -18,7 +18,7 @@ const societiesSlice = createSlice({
             state.societies = state.societies.filter((society)=>(society.id!==action.payload.id))
         },
         updateSociety  : (state,action)=>{
-            state.societies = state.posts.map((society)=>(
+            state.societies = state.societies.map((society)=>(
                 (action.payload.id==society.id) ? action.payload.updatedSociety: society
             ))
         },

@@ -1,11 +1,12 @@
-//✨🌸 Ganesh Sita Ram Waheguru Allah Hanuman Ji Mata Pita Ji Jai Kali Mata Shiv Shankar Hanuman Ji🌸✨
 import {configureStore} from "@reduxjs/toolkit";
 import authSlice from "./authSlice";
-import societiesSlice from "./societiesSlice"
+import societiesSlice from "./societiesSlice";
+import eventSlice from "./eventSlice"
 const store = configureStore({
     reducer : {
         auth : authSlice,
-        society:societiesSlice
+        society:societiesSlice,
+        event: eventSlice
     }
 })
 

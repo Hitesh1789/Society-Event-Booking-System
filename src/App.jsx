@@ -6,20 +6,25 @@ import { SideBar } from './components/index';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { useSelector } from "react-redux";
 import { getUser } from './api/user.api';
-
 function App() {
   const [loading, setLoading] = useState(true);
   const authStatus = useSelector((state) => state.auth.status);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+  const user = useSelector((state) => state.auth.userData)
+
   useEffect(() => {
+    // If user already exists in Redux, do NOT call API
+    if (user) {
+      setLoading(false)
+      return
+    }
     getUser().then((userData)=>{
       dispatch(login({userData:userData.data.data}))
     })
     .catch((error)=>console.log(error))
     .finally(()=>setLoading(false));
-  }, [])
+  }, [user,dispatch])
 
   return (
     loading ? (<div className="flex items-center justify-center h-screen">

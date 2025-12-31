@@ -5,6 +5,7 @@ import SideBar from "./Sidebar";
 import Login from "./Login"
 import SocietyCard from "./SocietyCard";
 import EventCard from "./EventCard";
+import MySocietyCard from "./MySocietyCard";
 export {
     Signup,
     Button,
@@ -12,5 +13,6 @@ export {
     SideBar,
     Login,
     SocietyCard,
-    EventCard
+    EventCard,
+    MySocietyCard
 }

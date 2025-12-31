@@ -19,16 +19,15 @@ const items = [
   { title: "All Societies", url: "/all-societies", icon: Users },
   { title: "My Societies", url: "/my-societies", icon: Star },
   { title: "My Events", url: "/events", icon: CalendarDays },
-  { title: "All Events", url: "/events", icon: UserRound },
+  { title: "All Events", url: "/", icon: UserRound },
 ]
 
 export default function SideBar() {
   const userData = useSelector((state) => state.auth.userData);
   const authStatus = useSelector((state) => state.auth.status);
-  const role = userData?.profile?.role || "user";
+  const isPresident = userData?.societies.some((s)=>s.society_role==="president");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const logoutHandler = async () =>{
     try {
       await logoutUser();
@@ -53,7 +52,7 @@ export default function SideBar() {
               EventMitra
             </SidebarGroupLabel>
 
-            <p className="text-sm text-center text-gray-500">{role}</p>
+            <p className="text-sm text-center text-gray-500">Society Managar</p>
           </SidebarGroup>
         </div>
         
@@ -76,7 +75,7 @@ export default function SideBar() {
                   </SidebarMenuItem>) 
                 ))}
                 {
-                  (role == "president" || role == "admin") ? (
+                  (userData?.profile?.role == "admin" || isPresident) ? (
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
                         <button
@@ -113,9 +112,9 @@ export default function SideBar() {
           </div>
 
           <div>
-            <p className="text-sm font-semibold">{"ram"}</p> {/* change */}
+            <p className="text-sm font-semibold">{userData?.profile?.name}</p> {/* change */}
             <span className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-md">
-              {role}
+              {userData?.profile?.role}
             </span>
           </div>
         </div>
@@ -134,7 +133,7 @@ export default function SideBar() {
               EventMitra
             </SidebarGroupLabel>
 
-            <p className="text-sm text-center text-gray-500">{role}</p>
+            <p className="text-sm text-center text-gray-500">Society Managar</p>
           </SidebarGroup>
         </div>
 

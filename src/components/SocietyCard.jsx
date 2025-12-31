@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input"
 
 function SocietyCard({
-  category="category",
+  category="Category",
   description,
   socName,
   president,

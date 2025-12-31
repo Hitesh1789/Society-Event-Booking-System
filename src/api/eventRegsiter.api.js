@@ -16,6 +16,7 @@ const cancelRegistration = (eventId)=>{
 const getRegistrations = (eventId)=>{
     return axiosClient.get(`/event-register/${eventId}/getRegistrations`)
 }
+
 export{
     getMyRegisterations,
     registerEvent,

@@ -1,56 +1,51 @@
 import { Button, EventCard } from "../components";
 import { getAllUpcomingEvents } from "../api/events.api";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { clearEvents, addEvents } from "../store/eventSlice";
+
 function Home() {
-    const [events, setEvents] = useState([]);
+    const events = useSelector((state)=>state.event.events);
+    const dispatch = useDispatch();
 
-    const events2 = [{ //delete
-        id:"122",
-        title: "Tech Talk: AI in Healthcare"
-        ,status: "Completed",
-        society_name: "Tech Society",
-        date: "Nov 15, 2025",
-        time: "14:00",
-        venue: "Auditorium A",
-    },
-    {   
-        id:"123",
-        title: "Tech Talk: AI in Jobs"
-        ,status: "Completed",
-        society_name: "Tech Society",
-        date: "Nov 15, 2025",
-        time: "14:00",
-        venue: "Auditorium A",
+    function getDate(apiDate){
+        const date = new Date(apiDate); 
+        const formattedDate = date.toLocaleDateString('en-IN');
+        return  formattedDate;
     }
-    ]
-
 
     useEffect(() => {
-        try {
-            (async () => {
-                const fetchedEvents = await getAllUpcomingEvents()
-                setEvents(fetchedEvents.data.data);
-            })()
-            setEvents(events2) //change
-        }
-        catch (error) {
-            console.log("Error in fetching events: ", error);
-        }
-    }, [])
+        if (events.length > 0) return   // STOP API CALL
+        (async () => {
+            try {
+                const fetchedEvents = await getAllUpcomingEvents();
+                if (fetchedEvents.data.data) {
+                    dispatch(addEvents({events : fetchedEvents.data.data}))
+                }
+                else {
+                    dispatch(clearEvents())
+                }
+            }
+            catch (error) {
+                console.log("Error while fetching all socities: ", error)
+            }
+        })();
+    },[events.length])
     
     return (
         <div className="flex">
             <div className="flex-1 p-2">
                 <h1 className="text-2xl font-semibold mb-4">Upcoming Events</h1>
                 <div className="flex flex-wrap gap-3">
-                    {
+                    {   
                         events.map((event) => (
                             <EventCard key={event.id}
-                                title={event.title}
+                                eventId={event.id}
+                                title={event.name}
                                 status={event.status}
                                 societyName={event.society_name}
-                                date={event.date}
-                                time={11} //change
+                                date={getDate(event.date)}
+                                // time={11} //change
                                 venue={event.location}
                                 registered={45} //change
                                 totalSeats={100} //change
