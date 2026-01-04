@@ -18,7 +18,7 @@ const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutGrid },
   { title: "All Societies", url: "/all-societies", icon: Users },
   { title: "My Societies", url: "/my-societies", icon: Star },
-  { title: "My Events", url: "/events", icon: CalendarDays },
+  { title: "My Events", url: "/my-events", icon: CalendarDays },
   { title: "All Events", url: "/", icon: UserRound },
 ]
 

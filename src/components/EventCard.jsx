@@ -16,9 +16,14 @@ export default function EventCard({
   registered,
   totalSeats,
   showRegister = true,
+  showCancelRegister = false,
+  registrationStatus,
+  onRegister,
+  onCancel  
 }) {
-  const filledPercent = Math.round((registered / totalSeats) * 100)
+  const filledPercent = totalSeats ? Math.round((registered / totalSeats) * 100) : 0;
   const navigate = useNavigate();
+  
   return (
     <Card className="w-full rounded-2xl border p-6">
       {/* Top Row */}
@@ -27,8 +32,13 @@ export default function EventCard({
           <div className="flex items-center gap-3">
             <h2 className="text-lg text-purple-500 font-semibold">{title}</h2>
             {status && (
-              <Badge variant="secondary" className="text-red-500 rounded-full px-3">
-                {status}
+              <Badge variant="secondary" className="rounded-full px-3">
+                Event Status : <span className="text-red-500">{status}</span>
+              </Badge>
+            )}
+            {registrationStatus && (
+              <Badge variant="secondary" className="rounded-full px-3">
+                Registration Status:  <span className="text-red-500">{registrationStatus}</span>  
               </Badge>
             )}
           </div>
@@ -37,12 +47,20 @@ export default function EventCard({
 
         {/* Actions */}
         <div className="flex items-center gap-3">
-          {showRegister && status !== "Completed" && (
+          {showRegister && status !== "completed" && (
             <Button
               className="rounded-xl bg-purple-600 px-6 hover:bg-purple-700"
-              onClick={()=>navigate(`/event-register/${eventId}`)}
+              onClick={()=> onRegister(eventId)}
             >
               Register
+            </Button>
+          )}
+          {showCancelRegister && status !== "completed" && (
+            <Button
+              className="rounded-xl bg-purple-600 px-6 hover:bg-purple-700"
+              onClick={() => onCancel(eventId)}
+            >
+              Cancel Registration
             </Button>
           )}
           <Button variant="outline" className="rounded-xl" onClick={()=>navigate(`/event/${eventId}`)}>

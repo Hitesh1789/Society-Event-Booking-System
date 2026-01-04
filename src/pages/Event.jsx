@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { getEventInfo } from "../api/events.api"
-
+import { getMyRegisterations, registerEvent, cancelRegistration } from "../api/eventRegsiter.api";
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -11,7 +11,19 @@ export default function Event() {
   const { eventId } = useParams()
   const [event, setEvent] = useState(null)
   const [loading, setLoading] = useState(true)
-  const navigate = useNavigate();
+  const [showCancelRegButton, setShowCancelRegButton] = useState(true);
+  const [showRegisterButton, setShowRegisterButton] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const response = await getMyRegisterations()
+      const myRegsitrations = response.data.data.getMyRegisterations;
+      setShowCancelRegButton(myRegsitrations.some((event) =>
+        event.event_id === eventId && event.registration_status === "registered"
+      ));
+      setShowRegisterButton(myRegsitrations.some((event) => event.event_id == eventId) === false);
+    })()
+  }, [eventId])
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -19,7 +31,6 @@ export default function Event() {
         if (eventId) {
           const res = await getEventInfo(eventId)
           setEvent(res.data.data)
-          console.log(res.data.data)
         }
       } catch (error) {
         console.log("Error in fetching eventInfo:", error)
@@ -54,6 +65,18 @@ export default function Event() {
     minute: "2-digit",
   })
 
+  const handleCancel = async () => {
+    await cancelRegistration(eventId);
+    setShowRegisterButton(false);
+    setShowCancelRegButton(false);
+  };
+
+  const handleRegister = async () => {
+    await registerEvent(eventId);
+    setShowRegisterButton(false);
+    setShowCancelRegButton(true);
+  };
+
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-2">
       {/* Header */}
@@ -72,7 +95,14 @@ export default function Event() {
           <Button variant="outline" size="icon">
             <Share2 className="h-4 w-4" />
           </Button>
-          <Button onClick={()=>navigate(`/event-register/${eventId}`)}>Register</Button>
+          {
+            showRegisterButton && event.status != "completed" &&
+            (<Button onClick={handleRegister}>Register</Button>)
+          }
+          {
+            showCancelRegButton && event.status != "completed" &&
+            (<Button onClick={handleCancel}>Cancel Registration</Button>)
+          }
         </div>
       </div>
 
@@ -114,7 +144,7 @@ export default function Event() {
           <p className="flex items-center gap-2">
           </p>
           {/* redirect to email if want */}
-          <Button variant="outline" className="mt-2"> 
+          <Button variant="outline" className="mt-2">
             Contact Organizer
           </Button>
         </div>

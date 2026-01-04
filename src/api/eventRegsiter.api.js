@@ -9,7 +9,7 @@ const registerEvent = (eventId)=>{
 }
 
 const cancelRegistration = (eventId)=>{
-    return axiosClient.post(`/event-register/${eventId}/cancel`)
+    return axiosClient.patch(`/event-register/${eventId}/cancel`)
 }
 
 // Get all registrations for a event => authorised to only society_members

@@ -1,21 +1,35 @@
-import { Button, EventCard } from "../components";
+import {EventCard } from "../components";
 import { getAllUpcomingEvents } from "../api/events.api";
-import { useEffect } from "react";
+import { useEffect ,useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { clearEvents, addEvents } from "../store/eventSlice";
-
+import { getMyRegisterations ,cancelRegistration,registerEvent} from "../api/eventRegsiter.api";
 function Home() {
     const events = useSelector((state)=>state.event.events);
+    const [myRegistrations, setMyRegistrations] = useState([]);
+    const [loadingRegs, setLoadingRegs] = useState(true);
     const dispatch = useDispatch();
 
-    function getDate(apiDate){
-        const date = new Date(apiDate); 
-        const formattedDate = date.toLocaleDateString('en-IN');
-        return  formattedDate;
-    }
+   
+    // format date
+    const getDate = (apiDate) => {
+        return new Date(apiDate).toLocaleDateString("en-IN");
+    };
+
+    // fetch registrations
+    const fetchMyRegistrations = async () => {
+        setLoadingRegs(true);
+        const response = await getMyRegisterations();
+        setMyRegistrations(response.data.data.getMyRegisterations);
+        setLoadingRegs(false);
+    };
 
     useEffect(() => {
-        if (events.length > 0) return   // STOP API CALL
+        fetchMyRegistrations();
+    }, []);
+
+    useEffect(() => {
+        if (events.length > 0) return // STOP API CALL
         (async () => {
             try {
                 const fetchedEvents = await getAllUpcomingEvents();
@@ -32,6 +46,33 @@ function Home() {
         })();
     },[events.length])
     
+    const showCancelRegButton = (eventId) =>{
+        if (loadingRegs) return false;
+        return myRegistrations.some(
+            (event) =>
+                event.event_id === eventId &&
+                event.registration_status === "registered"
+        );
+    }
+
+    const showRegisterButton = (eventId) =>{ 
+        if (loadingRegs) return false;
+        return !myRegistrations.some((event)=>event.event_id===eventId);
+    }
+
+    // register event
+    const handleRegister = async (eventId) => {
+        await registerEvent(eventId);
+        fetchMyRegistrations();
+    };
+
+    // cancel registration
+    const handleCancel = async (eventId) => {
+        await cancelRegistration(eventId);
+        fetchMyRegistrations();
+    };
+
+
     return (
         <div className="flex">
             <div className="flex-1 p-2">
@@ -49,6 +90,10 @@ function Home() {
                                 venue={event.location}
                                 registered={45} //change
                                 totalSeats={100} //change
+                                showRegister={showRegisterButton(event.id)}
+                                showCancelRegister={showCancelRegButton(event.id)}
+                                onCancel={handleCancel}
+                                onRegister = { handleRegister}
                             />
                         ))
                     }

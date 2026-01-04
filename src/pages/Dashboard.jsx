@@ -34,8 +34,13 @@ export default function Dashboard() {
     if (!userData) return;
     const fetchData = async () => {
       try {
-        const fetchedRegistrations = await getMyRegisterations();
-        setMyRegisterations(fetchedRegistrations.data.data.getMyRegisterations.length)
+        const response = await getMyRegisterations();
+        const fetchedRegistrations = response.data.data.getMyRegisterations;
+        let registeredEvents = 0;
+        fetchedRegistrations.forEach((event) => {
+          if(event.registration_status=='registered') registeredEvents++;
+        });
+        setMyRegisterations(registeredEvents)
       }
       catch (error) {
         console.log("Error in fetching : ", error);

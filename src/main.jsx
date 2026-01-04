@@ -14,6 +14,7 @@ import Protected from './components/Protected.jsx'
 import MySocieties from './pages/MySocieties.jsx'
 import Event from './pages/Event.jsx';
 import Society from './pages/Society.jsx'
+import MyEvents from './pages/MyEvents.jsx'
 
 const router = createBrowserRouter([
   {
@@ -65,7 +66,7 @@ const router = createBrowserRouter([
         )
       },
       {
-        path:'event/:eventId',
+        path:'/event/:eventId',
         element:(
           <Protected authentication>
             <Event/>
@@ -73,13 +74,22 @@ const router = createBrowserRouter([
         )
       },
       {
-        path:'society/:societyId',
+        path:'/society/:societyId',
         element:(
           <Protected authentication>
             <Society/>
           </Protected>
         )
-      }
+      },
+      {
+        path:'/my-events',
+        element:(
+          <Protected authentication>
+            <MyEvents/>
+          </Protected>
+        )
+      },
+      
     ]
   },
 ])
