@@ -4,11 +4,13 @@ import { addSocieties, clearSocieties } from "../store/societiesSlice";
 import { getSocieties } from "../api/society.api";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export default function MySocieties() {
     const societies = useSelector((state) => state.society.societies)
     const userData = useSelector((state) => state.auth.userData)
-    const dispatch = useDispatch();
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     function isMember(society_id) {
         return userData?.societies.some((s) => Number(society_id) === Number(s.society_id))
@@ -32,11 +34,21 @@ export default function MySocieties() {
         })();
     }, [societies.length])
 
-
     return (
         <div className="flex">
             <div className="flex-1 p-2">
+                <div className="flex justify-between">
                 <h1 className="text-2xl font-semibold mb-4">All Societies</h1>
+                {userData?.profile?.role=="admin" && (
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={()=>navigate('/create-society')}
+                            className="px-4 py-2 bg-purple-600 text-white rounded-md cursor-pointer">
+                            Create Society
+                        </button>
+                    </div>
+                )}
+                </div>
                 <div className="flex flex-wrap gap-3">
                     {
                         societies.map((society) => (

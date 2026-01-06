@@ -8,20 +8,20 @@ const getSocietyInfo = (id) => {
     return axiosClient.get(`/society/${id}`)
 }
 
-const createSociety = () => {
-    return axiosClient.get("/society/create")
+const createSociety = (data) => {
+    return axiosClient.post("/society/create",data)
 }
 
-const joinSociety = () => {
-    return axiosClient.get("/society/join")
+const joinSociety = (data) => {
+    return axiosClient.post("/society/join",data)
 }
 
 const assignPresident = (id) => {
-    return axiosClient.get(`/society/${id}/assignPresident`)
+    return axiosClient.patch(`/society/${id}/assignPresident`)
 }
 
 const assignLead = (id) => {
-    return axiosClient.get(`/society/${id}/assignLead`)
+    return axiosClient.patch(`/society/${id}/assignLead`)
 }
 
 const getMembers = (id) => {

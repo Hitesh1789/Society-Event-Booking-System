@@ -17,13 +17,13 @@ export default function MySocieties() {
         ))
         setMySocieties(userSocietiesInfo)
     }, [userData, societies])
-    
-    function getRole(society_id){
-        const society  = userData.societies.filter((s)=>Number(s.society_id)===Number(society_id))
+
+    function getRole(society_id) {
+        const society = userData.societies.filter((s) => Number(s.society_id) === Number(society_id))
         return society[0].society_role;
     }
 
-     useEffect(() => {
+    useEffect(() => {
         if (societies.length > 0) return   // STOP API CALL
         (async () => {
             try {
@@ -41,16 +41,17 @@ export default function MySocieties() {
         })();
     }, [societies.length])
 
-    return (mySocieties.length == 0) ? (
-        <div className="flex flex-wrap">
-            <div className="p-2 w-full">
-                <h1 className="text-2xl font-bold">
-                    {<>Sorry ,You Have not joined any Society yet.</>}
-                </h1>
+    return (
+
+        (mySocieties.length == 0) ? (
+            <div className="flex flex-wrap">
+                <div className="p-2 w-full">
+                    <h1 className="text-2xl font-bold">
+                        {<>Sorry ,You Have not joined any Society yet.</>}
+                    </h1>
+                </div>
             </div>
-        </div>
-    ) :
-        (
+        ) : (
             <div className="flex">
                 <div className="flex-1 p-2">
                     <h1 className="text-2xl font-semibold mb-4">Your Societies</h1>
@@ -65,6 +66,7 @@ export default function MySocieties() {
                                     societyName={society.name}
                                     role={getRole(society.id)}
                                     members={society.member_count}
+                                    onJoinSuccess={societies}
                                 />
                             ))
                         }
@@ -72,4 +74,6 @@ export default function MySocieties() {
                 </div>
             </div>
         )
+
+    )
 }

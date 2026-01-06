@@ -17,7 +17,7 @@ function Signup(){
         setError("");
         try{
             const res = await signupUser(data);
-            console.log("SIGNUP:\n",res)
+            // console.log("SIGNUP:\n",res)
             if(res){
                 const userData = await getUser();
                 // console.log("UserData:\n",userData)

@@ -15,6 +15,7 @@ import MySocieties from './pages/MySocieties.jsx'
 import Event from './pages/Event.jsx';
 import Society from './pages/Society.jsx'
 import MyEvents from './pages/MyEvents.jsx'
+import CreateSociety from './pages/CreateSociety.jsx'
 
 const router = createBrowserRouter([
   {
@@ -89,6 +90,14 @@ const router = createBrowserRouter([
           </Protected>
         )
       },
+      {
+        path:'/create-society',
+        element:(
+          <Protected authentication>
+            <CreateSociety/>
+          </Protected>
+        )
+      }
       
     ]
   },
