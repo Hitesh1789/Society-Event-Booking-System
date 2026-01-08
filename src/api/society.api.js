@@ -20,8 +20,8 @@ const assignPresident = (id) => {
     return axiosClient.patch(`/society/${id}/assignPresident`)
 }
 
-const assignLead = (id) => {
-    return axiosClient.patch(`/society/${id}/assignLead`)
+const assignLead = (id,data) => {
+    return axiosClient.patch(`/society/${id}/assignLead`,data)
 }
 
 const getMembers = (id) => {

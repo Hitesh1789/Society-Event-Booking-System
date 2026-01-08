@@ -10,12 +10,13 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-
+import { assignLead } from "../api/society.api";
 export default function Society() {
   const { societyId } = useParams()
   const [society, setSociety] = useState(null)
   const [members, setMembers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [isPresident, setIsPresident] = useState(false);
 
   useEffect(() => {
     const fetchSociety = async () => {
@@ -34,10 +35,20 @@ export default function Society() {
     }
 
     fetchSociety()
-  }, [societyId])
+  }, [societyId, members])
+
+  useEffect(() => {
+    setIsPresident(society?.user_role == 'president')
+  }, [society])
 
   const getDate = (date) =>
     new Date(date).toLocaleDateString("en-IN")
+
+  const assignlead = async (leadId) => {
+    await assignLead(society.id, { "userId": leadId })
+    const membersRes = await getMembers(society.id)
+    setMembers(membersRes.data.data.members)
+  }
 
   if (loading) {
     return <div className="p-6 text-purple-500">Loading society details...</div>
@@ -89,28 +100,53 @@ export default function Society() {
               Members
             </h3>
 
-            <div className="grid grid-cols-4 text-sm font-medium text-muted-foreground border-b pb-2">
+            <div className="grid grid-cols-5 text-sm font-medium text-muted-foreground border-b pb-2">
               <span>Name</span>
               <span>Email</span>
               <span>Joined</span>
               <span>Role</span>
+              {isPresident && <span className="text-right">Action</span>}
             </div>
 
             <div className="divide-y">
               {members.map((member) => (
                 <div
                   key={member.id}
-                  className="grid grid-cols-4 text-sm py-2"
+                  className="grid grid-cols-5 items-center text-sm py-3"
                 >
-                  <span>{member.name}</span>
-                  <span className="truncate">{member.email}</span>
+                  <span className="font-medium">{member.name}</span>
+
+                  <span className="truncate text-muted-foreground">
+                    {member.email}
+                  </span>
+
                   <span>{getDate(member.joined_at)}</span>
+
                   <Badge variant="outline" className="w-fit">
                     {member.role}
                   </Badge>
+                  
+                  {/* Assign Lead Button — UI only */}
+                  {isPresident && (
+                    <div className="flex justify-end">
+                      {society.lead?.id !== member.id &&
+                        <button
+                          className="
+              px-4 py-1.5 text-xs font-medium
+              rounded-full border
+              text-purple-600 border-purple-300
+              hover:bg-purple-600 hover:text-white
+              transition-all duration-200
+            "
+                          onClick={() => assignlead(member.id)}
+                        > Assign Lead
+                        </button>}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
+
           </div>
 
           <Separator />
@@ -138,6 +174,6 @@ export default function Society() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </div >
   )
 }

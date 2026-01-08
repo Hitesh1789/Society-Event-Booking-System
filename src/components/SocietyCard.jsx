@@ -12,21 +12,24 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { joinSociety } from "../api/society.api"
+import { useSelector } from "react-redux"
 
 function SocietyCard({
-  category = "Category",
   description,
   socName,
   president,
   members,
   events = 0,
   isMember = false,
-  onJoinSuccess, // refresh callback from parent
+  onJoinSuccess,
+  lead,
 }) {
   const [open, setOpen] = useState(false)
   const [joinCode, setJoinCode] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+
+  const userData = useSelector((state) => state.auth.userData)
 
   const joinHandler = async () => {
     if (!joinCode.trim()) {
@@ -37,10 +40,10 @@ function SocietyCard({
     try {
       setLoading(true)
       setError("")
-      await joinSociety({join_code:joinCode})
+      await joinSociety({ join_code: joinCode })
       setOpen(false)
       setJoinCode("")
-      onJoinSuccess?.() // refresh societies
+      onJoinSuccess?.()
     } catch (err) {
       setError(
         err?.response?.data?.message || "Invalid join code. Please try again."
@@ -50,19 +53,30 @@ function SocietyCard({
     }
   }
 
+  const handleDialogChange = (state) => {
+    setOpen(state)
+    if (!state) {
+      setJoinCode("")
+      setError("")
+    }
+  }
+
   return (
     <>
-      {/* CARD */}
       <Card className="p-3 rounded-2xl border hover:shadow-md w-70">
         <CardContent className="space-y-4">
-          {/* Top */}
+
+          {/* TOP */}
           <div className="flex items-center justify-between">
             <div className="h-12 w-12 bg-purple-600 rounded-xl flex items-center justify-center">
               <Users className="h-6 w-6 text-white" />
             </div>
-            <span className="text-sm px-3 py-1 rounded-full border bg-white">
-              {category}
-            </span>
+
+            {userData?.profile?.role === "admin" && !president && (
+              <button className="text-sm px-3 py-1 rounded-full border bg-white">
+                Assign President
+              </button>
+            )}
           </div>
 
           <h2 className="text-xl font-semibold">{socName}</h2>
@@ -79,7 +93,8 @@ function SocietyCard({
           </div>
 
           <p className="text-sm">
-            <span className="font-semibold">President:</span> {president}
+            <span className="font-semibold">President:</span>{" "}
+            {president || "Not Assigned"}
           </p>
 
           <div className="pt-2">
@@ -88,7 +103,8 @@ function SocietyCard({
                 variant="outline"
                 className="w-full text-purple-600 border-purple-300"
               >
-                <Award className="h-4 w-4 mr-2" /> Member
+                <Award className="h-4 w-4 mr-2" />
+                Member
               </Button>
             ) : (
               <Button
@@ -104,7 +120,7 @@ function SocietyCard({
       </Card>
 
       {/* JOIN DIALOG */}
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={handleDialogChange}>
         <DialogContent className="rounded-xl">
           <DialogHeader>
             <DialogTitle>Join {socName}</DialogTitle>
@@ -122,9 +138,7 @@ function SocietyCard({
             }}
           />
 
-          {error && (
-            <p className="text-sm text-red-500 mt-1">{error}</p>
-          )}
+          {error && <p className="text-sm text-red-500">{error}</p>}
 
           <DialogFooter>
             <Button

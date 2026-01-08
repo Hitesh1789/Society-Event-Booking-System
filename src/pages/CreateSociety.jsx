@@ -1,8 +1,9 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { Input, Button } from "../components";
-import { createSociety } from "../api/society.api";
-
+import { createSociety, getSocieties } from "../api/society.api";
+import { useDispatch } from "react-redux";
+import { clearSocieties,addSocieties } from "../store/societiesSlice";
 export default function CreateSociety() {
   const {
     register,
@@ -13,10 +14,15 @@ export default function CreateSociety() {
 
   const [apiError, setApiError] = useState("");
 
+  const dispatch = useDispatch();
+  
   const submit = async (data) => {
     try {
       setApiError("");
       await createSociety(data);
+      dispatch(clearSocieties());
+      const socRes = await getSocieties();
+      dispatch(addSocieties({ societies: socRes.data.data.societies}));
       reset(); // clear form on success
     } catch (error) {
       setApiError(
