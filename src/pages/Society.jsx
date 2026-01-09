@@ -12,42 +12,46 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { assignLead } from "../api/society.api";
 export default function Society() {
-  const { societyId } = useParams()
+  const {societyId} = useParams()
   const [society, setSociety] = useState(null)
   const [members, setMembers] = useState([])
   const [loading, setLoading] = useState(true)
   const [isPresident, setIsPresident] = useState(false);
-
-  useEffect(() => {
-    const fetchSociety = async () => {
-      try {
-        const [societyRes, membersRes] = await Promise.all([
-          getSocietyInfo(societyId),
-          getMembers(societyId),
-        ])
-        setSociety(societyRes.data.data)
-        setMembers(membersRes.data.data.members)
-      } catch (error) {
-        console.log("Error fetching society data:", error)
-      } finally {
-        setLoading(false)
-      }
+  
+  const fetchSociety = async () => {
+    try {
+      const [societyRes, membersRes] = await Promise.all([
+        getSocietyInfo(societyId),
+        getMembers(societyId),
+      ])
+      setSociety(societyRes.data.data)
+      setMembers(membersRes.data.data.members)
+    } catch (error) {
+      console.log("Error fetching society data:", error)
+    } finally {
+      setLoading(false)
     }
-
-    fetchSociety()
-  }, [societyId, members])
+  }
 
   useEffect(() => {
-    setIsPresident(society?.user_role == 'president')
+    if(society!=null) return;
+    fetchSociety()
+  }, [societyId, members,society])
+
+  useEffect(() => {
+    setIsPresident(society?.user_role == 'president' || society?.user_role=="admin" )
   }, [society])
 
   const getDate = (date) =>
     new Date(date).toLocaleDateString("en-IN")
 
   const assignlead = async (leadId) => {
-    await assignLead(society.id, { "userId": leadId })
-    const membersRes = await getMembers(society.id)
-    setMembers(membersRes.data.data.members)
+    try {
+      await assignLead(society.id, {"userId": leadId})
+      fetchSociety()
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   if (loading) {
@@ -105,7 +109,7 @@ export default function Society() {
               <span>Email</span>
               <span>Joined</span>
               <span>Role</span>
-              {isPresident && <span className="text-right">Action</span>}
+              {isPresident && <span className="text-right mr-5">Action</span>}
             </div>
 
             <div className="divide-y">
@@ -127,17 +131,17 @@ export default function Society() {
                   </Badge>
                   
                   {/* Assign Lead Button — UI only */}
-                  {isPresident && (
+                  {isPresident && (member.role!="president") && (
                     <div className="flex justify-end">
                       {society.lead?.id !== member.id &&
                         <button
                           className="
-              px-4 py-1.5 text-xs font-medium
-              rounded-full border
-              text-purple-600 border-purple-300
-              hover:bg-purple-600 hover:text-white
-              transition-all duration-200
-            "
+                          px-4 py-1.5 text-xs font-medium
+                          text-purple-600 border-purple-300
+                          rounded-full border
+                          transition-all duration-200 cursor-pointer
+                          hover:bg-purple-600 hover:text-white
+                          "
                           onClick={() => assignlead(member.id)}
                         > Assign Lead
                         </button>}
@@ -161,13 +165,13 @@ export default function Society() {
               <p>
                 <span className="text-muted-foreground">Name:</span>{" "}
                 <span className="font-medium">
-                  {society.lead?.name}
+                  {society.lead? society.lead.name : <>Lead not Assigned yet</>}
                 </span>
               </p>
               <p>
                 <span className="text-muted-foreground">Email:</span>{" "}
                 <span className="font-medium">
-                  {society.lead?.email}
+                  {society.lead? society.lead.email : <>Lead not Assigned yet</>}
                 </span>
               </p>
             </div>

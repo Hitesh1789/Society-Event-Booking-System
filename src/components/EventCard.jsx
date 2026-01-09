@@ -11,17 +11,13 @@ export default function EventCard({
   status,
   societyName,
   date,
-  time,
   venue,
-  registered,
-  totalSeats,
   showRegister = true,
   showCancelRegister = false,
   registrationStatus,
   onRegister,
   onCancel  
 }) {
-  const filledPercent = totalSeats ? Math.round((registered / totalSeats) * 100) : 0;
   const navigate = useNavigate();
   
   return (
@@ -76,11 +72,6 @@ export default function EventCard({
             <Calendar className="h-4 w-4" /> {date}
           </span>
         )}
-        {time && (
-          <span className="flex items-center gap-2">
-            <Clock className="h-4 w-4" /> {time}
-          </span>
-        )}
         {venue && (
           <span className="flex items-center gap-2">
             <Users className="h-4 w-4" /> {venue}
@@ -88,16 +79,6 @@ export default function EventCard({
         )}
       </div>
 
-      {/* Progress */}
-      <div className="space-y-2">
-        <div className="flex justify-between text-sm text-muted-foreground">
-          <span>
-            {registered} / {totalSeats} registered
-          </span>
-          <span>{filledPercent}% filled</span>
-        </div>
-        <Progress value={filledPercent} className="h-2 rounded-full" />
-      </div>
     </Card>
   )
 }

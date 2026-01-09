@@ -11,7 +11,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { joinSociety } from "../api/society.api"
+import { assignPresident, getMembers, joinSociety } from "../api/society.api"
 import { useSelector } from "react-redux"
 
 function SocietyCard({
@@ -22,12 +22,16 @@ function SocietyCard({
   events = 0,
   isMember = false,
   onJoinSuccess,
-  lead,
+  socId
 }) {
   const [open, setOpen] = useState(false)
   const [joinCode, setJoinCode] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [assignOpen, setAssignOpen] = useState(false)
+  const [socMembers, setSocMembers] = useState([])
+  const [assignLoading, setAssignLoading] = useState(false)
+
 
   const userData = useSelector((state) => state.auth.userData)
 
@@ -61,6 +65,23 @@ function SocietyCard({
     }
   }
 
+  const assignPresidentHandler = async () => {
+    try {
+      setAssignLoading(true)
+
+      const membersRes = await getMembers(socId)
+      const membersList = membersRes.data.data.members
+
+      setSocMembers(membersList)
+      setAssignOpen(true)
+
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setAssignLoading(false)
+    }
+  }
+
   return (
     <>
       <Card className="p-3 rounded-2xl border hover:shadow-md w-70">
@@ -73,7 +94,8 @@ function SocietyCard({
             </div>
 
             {userData?.profile?.role === "admin" && !president && (
-              <button className="text-sm px-3 py-1 rounded-full border bg-white">
+              <button className="text-sm px-3 py-1 rounded-full border bg-white cursor-pointer"
+                onClick={assignPresidentHandler}>
                 Assign President
               </button>
             )}
@@ -158,6 +180,53 @@ function SocietyCard({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* ASSIGN PRESIDENT DIALOG */}
+      <Dialog open={assignOpen} onOpenChange={setAssignOpen}>
+        <DialogContent className="rounded-xl">
+          <DialogHeader>
+            <DialogTitle>Assign President</DialogTitle>
+            <DialogDescription>
+              Select a member to make President
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 max-h-60 overflow-y-auto">
+            {socMembers.map((member) => (
+              <div
+                key={member.id}
+                className="flex items-center justify-between border p-2 rounded-lg"
+              >
+                <div>
+                  <p className="font-medium">{member.name}</p>
+                  <p className="text-sm text-gray-500">{member.email}</p>
+                </div>
+
+                <Button
+                  size="sm"
+                  className="cursor-pointer"
+                  disabled={assignLoading}
+                  onClick={async () => {
+                    try {
+                      setAssignLoading(true)
+                      await assignPresident(socId, { "userId": member.id })
+                      setAssignOpen(false)
+                      onJoinSuccess?.()
+                    } catch (err) {
+                      console.log(err)
+                    } finally {
+                      setAssignLoading(false)
+                    }
+                  }}
+                >
+                  Assign
+                </Button>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </>
   )
 }

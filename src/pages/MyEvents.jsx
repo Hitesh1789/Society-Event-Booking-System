@@ -42,7 +42,7 @@ export default function MyEvents() {
     };
 
     return (
-        <>
+        <div className="p-2 flex flex-col gap-4">
             <h1 className="text-2xl font-semibold mb-4">Your registered events are: </h1>
             {
                 myRegistrations.map((event) => (
@@ -51,12 +51,8 @@ export default function MyEvents() {
                         eventId={event.event_id}
                         title={event.event_name}
                         status={event.event_status}
-                        //societyName={event.society_name}
                         date={getDate(event.date)}
-                        // time={11} //change
                         venue={event.location}
-                        registered={45} //change
-                        totalSeats={100} //change
                         showRegister={false}
                         showCancelRegister={showCancelRegButton(event.event_id)}
                         registrationStatus={event.registration_status}
@@ -65,6 +61,6 @@ export default function MyEvents() {
                     />
                 ))
             }
-        </>
+        </div>
     )
 } 

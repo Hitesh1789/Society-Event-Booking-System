@@ -92,9 +92,6 @@ export default function Event() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="icon">
-            <Share2 className="h-4 w-4" />
-          </Button>
           {
             showRegisterButton && event.status != "completed" &&
             (<Button onClick={handleRegister}>Register</Button>)
@@ -143,10 +140,6 @@ export default function Event() {
           </p>
           <p className="flex items-center gap-2">
           </p>
-          {/* redirect to email if want */}
-          <Button variant="outline" className="mt-2">
-            Contact Organizer
-          </Button>
         </div>
       </Card>
     </div>

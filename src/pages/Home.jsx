@@ -86,10 +86,7 @@ function Home() {
                                 status={event.status}
                                 societyName={event.society_name}
                                 date={getDate(event.date)}
-                                // time={11} //change
                                 venue={event.location}
-                                registered={45} //change
-                                totalSeats={100} //change
                                 showRegister={showRegisterButton(event.id)}
                                 showCancelRegister={showCancelRegButton(event.id)}
                                 onCancel={handleCancel}

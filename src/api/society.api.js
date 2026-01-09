@@ -16,8 +16,8 @@ const joinSociety = (data) => {
     return axiosClient.post("/society/join",data)
 }
 
-const assignPresident = (id) => {
-    return axiosClient.patch(`/society/${id}/assignPresident`)
+const assignPresident = (id,data) => {
+    return axiosClient.patch(`/society/${id}/assignPresident`,data)
 }
 
 const assignLead = (id,data) => {

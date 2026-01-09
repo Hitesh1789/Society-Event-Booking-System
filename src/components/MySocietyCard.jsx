@@ -7,7 +7,6 @@ export default function MySocietyCard({
   societyId,
   societyName,
   role,
-  category="Category",
   tagline,
   members,
   upcomingEvents,
@@ -35,12 +34,6 @@ export default function MySocietyCard({
                   {(role=="president") && "👑 President"}
                   {(role=="lead") && "⭐ Lead"}
                   {(role=="member") && "👤 Member"}
-                </Badge>
-              )}
-
-              {category && (
-                <Badge variant="outline" className="rounded-full">
-                  {category}
                 </Badge>
               )}
             </div>
