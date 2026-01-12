@@ -47,7 +47,7 @@ function Login() {
                 </p>
                 {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
                 <form onSubmit={handleSubmit(login)} className="mt-8">
-                    <div className="space-y-5">
+                    <div className="space-y-5 flex flex-col">
                         <Input
                             label="Email : "
                             placeholder="Enter your email"
@@ -71,7 +71,7 @@ function Login() {
 
                         <Button
                             type="submit"
-                            classname="w-full cursor-pointer"
+                            classname="w-full cursor-pointer text-center"
                         >Sign In</Button>
                     </div>
                 </form>

@@ -6,6 +6,7 @@ import Login from "./Login"
 import SocietyCard from "./SocietyCard";
 import EventCard from "./EventCard";
 import MySocietyCard from "./MySocietyCard";
+import Select from "./Select";
 export {
     Signup,
     Button,
@@ -14,5 +15,6 @@ export {
     Login,
     SocietyCard,
     EventCard,
-    MySocietyCard
+    MySocietyCard,
+    Select
 }

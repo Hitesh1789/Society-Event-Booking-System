@@ -16,6 +16,9 @@ import Event from './pages/Event.jsx';
 import Society from './pages/Society.jsx'
 import MyEvents from './pages/MyEvents.jsx'
 import CreateSociety from './pages/CreateSociety.jsx'
+import Drafts from './pages/Drafts.jsx'
+import DraftForm from './components/DraftForm.jsx'
+import EventApproval from './pages/EventApproval.jsx'
 
 const router = createBrowserRouter([
   {
@@ -43,14 +46,14 @@ const router = createBrowserRouter([
         )
       },
       {
-        path :'/my-societies',
-        element :(
+        path: '/my-societies',
+        element: (
           <Protected authentication>
             <MySocieties />
           </Protected>
         )
       }
-      ,{
+      , {
         path: '/login',
         element: (
           <Protected authentication={false}>
@@ -67,46 +70,70 @@ const router = createBrowserRouter([
         )
       },
       {
-        path:'/event/:eventId',
-        element:(
+        path: '/event/:eventId',
+        element: (
           <Protected authentication>
-            <Event/>
+            <Event />
           </Protected>
         )
       },
       {
-        path:'/society/:societyId',
-        element:(
+        path: '/society/:societyId',
+        element: (
           <Protected authentication>
-            <Society/>
+            <Society />
           </Protected>
         )
       },
       {
-        path:'/my-events',
-        element:(
+        path: '/my-events',
+        element: (
           <Protected authentication>
-            <MyEvents/>
+            <MyEvents />
           </Protected>
         )
       },
       {
-        path:'/create-society',
-        element:(
+        path: '/create-society',
+        element: (
           <Protected authentication>
-            <CreateSociety/>
+            <CreateSociety />
+          </Protected>
+        )
+      },
+      {
+        path: '/drafts',
+        element: (
+          <Protected authentication>
+            <Drafts />
+          </Protected>
+        ),
+      },
+      {
+        path: '/create-draft',
+        element: (
+          <Protected authentication>
+            <DraftForm/>
+          </Protected>
+        )
+      },
+      {
+        path: '/event-approval',
+        element: (
+          <Protected authentication>
+            <EventApproval/>
           </Protected>
         )
       }
-      
+
     ]
   },
 ])
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  //<StrictMode>
     <Provider store={Store}>
       <RouterProvider router={router} />
     </Provider>
-  </StrictMode>,
+  //</StrictMode>,
 )

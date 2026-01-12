@@ -19,13 +19,14 @@ const items = [
   { title: "All Societies", url: "/all-societies", icon: Users },
   { title: "My Societies", url: "/my-societies", icon: Star },
   { title: "My Events", url: "/my-events", icon: CalendarDays },
-  { title: "All Events", url: "/", icon: UserRound },
+  { title: "All Events", url: "/", icon: UserRound }
 ]
 
 export default function SideBar() {
   const userData = useSelector((state) => state.auth.userData);
   const authStatus = useSelector((state) => state.auth.status);
   const isPresident = userData?.societies.some((s)=>s.society_role==="president");
+  const isLead = userData?.societies.some((s)=>s.society_role==="lead");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const logoutHandler = async () =>{
@@ -79,11 +80,26 @@ export default function SideBar() {
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
                         <button
-                          onClick={() => navigate("/approval")}
+                          onClick={() => navigate("/event-approval")}
                           className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-purple-100 transition-all cursor-pointer"
                         >
                           <ClipboardCheck className="h-5 w-5 text-gray-600" />
                           <span className="text-gray-800">Event Approval</span>
+                        </button>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ) : null
+                }
+                {
+                  (userData?.profile?.role == "admin" || isLead) ? (
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <button
+                          onClick={() => navigate("/drafts")}
+                          className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-purple-100 transition-all cursor-pointer"
+                        >
+                          <ClipboardCheck className="h-5 w-5 text-gray-600" />
+                          <span className="text-gray-800">Drafts</span>
                         </button>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
