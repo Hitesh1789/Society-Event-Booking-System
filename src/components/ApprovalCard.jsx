@@ -2,12 +2,15 @@ import { useState } from "react";
 import { Button } from "../components";
 import { approveOrRejectDraft } from "../api/eventDraft.api";
 import { useNavigate } from "react-router-dom";
-
+import { useDispatch } from "react-redux";
+import { updateUser } from "../store/authSlice";
+import { getUser } from "../api/user.api";
 export default function ApprovalCard({ draft }) {
     const [action, setAction] = useState(null); // request | approve | reject
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
-
+    const dispatch = useDispatch();
+    
     const handleSubmit = async () => {
         await approveOrRejectDraft(draft.id, {
             action,
@@ -15,6 +18,9 @@ export default function ApprovalCard({ draft }) {
         });
         setAction(null);
         setMessage("");
+        const res = await getUser();
+        dispatch(updateUser({newUserData:res.data.data}))
+        navigate('/event-approval')
     };
 
     return (
@@ -62,14 +68,14 @@ export default function ApprovalCard({ draft }) {
 
                     <Button
                         className="rounded-xl bg-green-600 py-2 text-white hover:bg-green-700"
-                        onClick={() => setAction("approve")}
+                        onClick={() => setAction("approved")}
                     >
                         Approve Draft
                     </Button>
 
                     <Button
                         className="rounded-xl bg-red-600 py-2 text-white hover:bg-red-700"
-                        onClick={() => setAction("reject")}
+                        onClick={() => setAction("rejected")}
                     >
                         Reject Draft
                     </Button>
@@ -101,7 +107,7 @@ export default function ApprovalCard({ draft }) {
 
                     <div className="flex gap-3">
                         <Button
-                            className="flex-1 rounded-xl bg-purple-600 py-2 text-white hover:bg-purple-700"
+                            className="flex-1 rounded-xl bg-purple-600 py-2 text-white hover:bg-purple-700 cursor-pointer"
                             onClick={handleSubmit}
                         >
                             Submit
@@ -109,7 +115,7 @@ export default function ApprovalCard({ draft }) {
 
                         <Button
                             variant="outline"
-                            className="flex-1 rounded-xl"
+                            className="flex-1 rounded-xl "
                             onClick={() => {
                                 setAction(null);
                                 setMessage("");

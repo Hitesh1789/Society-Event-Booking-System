@@ -26,7 +26,7 @@ export default function SideBar() {
   const userData = useSelector((state) => state.auth.userData);
   const authStatus = useSelector((state) => state.auth.status);
   const isPresident = userData?.societies.some((s)=>s.society_role==="president");
-  const isLead = userData?.societies.some((s)=>s.society_role==="lead");
+  const isMember = userData?.societies.some((s)=>s.society_role==="lead" || s.society_role==="president" ||s.society_role==="member");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const logoutHandler = async () =>{
@@ -91,7 +91,7 @@ export default function SideBar() {
                   ) : null
                 }
                 {
-                  (userData?.profile?.role == "admin" || isLead) ? (
+                  (userData?.profile?.role == "admin" || isMember) ? (
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
                         <button

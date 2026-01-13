@@ -3,11 +3,11 @@ function Button({
     type = 'button',
     bgColor = 'bg-blue-600',
     textColor = 'text-white',
-    classname ='',
+    className ='',
     ...props
 }) {
     return(
-        <button className={`px-4 py-2 rounded-lg cursor-pointer ${bgColor} ${textColor} ${classname}`} {...props} type={type}>
+        <button className={`px-2 py-2 rounded-lg cursor-pointer ${bgColor} ${textColor} ${className} `} {...props} type={type}>
             {children}
         </button>
     )

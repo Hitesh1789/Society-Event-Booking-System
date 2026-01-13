@@ -3,21 +3,24 @@ import { useForm } from "react-hook-form";
 import { Button, Input, Select } from "./index";
 import { useSelector } from "react-redux";
 import { createEventDraft } from "../api/eventDraft.api";
-
+import { getUser } from "../api/user.api";
+import { updateUser } from "../store/authSlice";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 export default function DraftForm() {
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-        reset,
     } = useForm();
 
     const [apiError, setApiError] = useState("");
-
+    const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
     const mySocieties = userData?.societies.filter((s)=>s.society_role=='lead') || [];
     const parentDrafts = userData?.pendingDrafts || [];
-    
+    const dispatch = useDispatch();
+
     const createDraft = async (data) => {
         try {
             setApiError("");
@@ -34,7 +37,9 @@ export default function DraftForm() {
             }
             if(parentDraftId) res[parentDraftId] = Number(parentDraftId)
             await createEventDraft(res);
-            reset();
+            const user = await getUser();
+            dispatch(updateUser({newUserData:user.data.data}))
+            navigate('/drafts')
         } catch (err) {
             setApiError(
                 err?.response?.data?.message ||

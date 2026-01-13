@@ -1,8 +1,7 @@
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Calendar, Clock, Users } from "lucide-react"
+import { Calendar, Users } from "lucide-react"
 import { useNavigate } from "react-router-dom";
 
 export default function EventCard({

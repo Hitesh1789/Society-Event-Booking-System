@@ -7,6 +7,9 @@ import SocietyCard from "./SocietyCard";
 import EventCard from "./EventCard";
 import MySocietyCard from "./MySocietyCard";
 import Select from "./Select";
+import DraftCard from "./DraftCard"
+import DraftForm from "./DraftForm"
+import ApprovalCard from "./ApprovalCard";
 export {
     Signup,
     Button,
@@ -16,5 +19,8 @@ export {
     SocietyCard,
     EventCard,
     MySocietyCard,
-    Select
+    Select,
+    DraftCard,
+    DraftForm,
+    ApprovalCard
 }
