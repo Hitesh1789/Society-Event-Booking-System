@@ -90,7 +90,7 @@ function Home() {
                                 showRegister={showRegisterButton(event.id)}
                                 showCancelRegister={showCancelRegButton(event.id)}
                                 onCancel={handleCancel}
-                                onRegister = { handleRegister}
+                                onRegister = {handleRegister}
                             />
                         ))
                     }

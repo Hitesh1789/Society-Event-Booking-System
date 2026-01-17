@@ -15,7 +15,6 @@ export default function EventApproval() {
       (s) => s.society_role === "president"
     );
 
-    console.log(userData)
     // 2. Pending approvals for those societies
     const res = userData.pendingApprovals.filter((draft) => presidentSocieties.some((soc) => soc.society_name === draft.societyName)
     );

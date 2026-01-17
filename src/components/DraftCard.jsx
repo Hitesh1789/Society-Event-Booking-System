@@ -12,12 +12,14 @@ export default function DraftCard({ draft }) {
         pending: "bg-yellow-100 text-yellow-700",
         approved: "bg-green-100 text-green-700",
         rejected: "bg-red-100 text-red-700",
+        changes_requested:"bg-blue-100 text-blue-700"
     };
 
     useEffect(() => {
         const fetchDraftInfo = async () => {
             try {
                 const res = await getDraftInfo(draft.id);
+                console.log(draft)
                 setDraftInfo(res.data.data.draft);
             } catch (error) {
                 console.error(error);
@@ -49,11 +51,11 @@ export default function DraftCard({ draft }) {
 
             {/* Info Grid */}
             <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
-                <p><span className="font-medium">Society:</span> {draft.societyName}</p>
+                <p><span className="font-medium">Society:</span> {draft.society_name}</p>
                 <p><span className="font-medium">Drafted By:</span> {draftInfo.drafted_by}</p>
 
                 <p><span className="font-medium">Proposed Date:</span> {getDate(draftInfo.proposed_date)}</p>
-                <p><span className="font-medium">Location:</span> {draftInfo.proposed_location}</p>
+                <p><span className="font-medium">Proposed Location:</span> {draftInfo.proposed_location}</p>
             </div>
 
             {/* Status */}

@@ -10,7 +10,7 @@ export default function ApprovalCard({ draft }) {
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    
+
     const handleSubmit = async () => {
         await approveOrRejectDraft(draft.id, {
             action,
@@ -19,7 +19,7 @@ export default function ApprovalCard({ draft }) {
         setAction(null);
         setMessage("");
         const res = await getUser();
-        dispatch(updateUser({newUserData:res.data.data}))
+        dispatch(updateUser({ newUserData: res.data.data }))
         navigate('/event-approval')
     };
 
@@ -86,6 +86,13 @@ export default function ApprovalCard({ draft }) {
                         onClick={() => navigate(`/drafts/${draft.id}`)}
                     >
                         View Full Draft
+                    </Button>
+                    <Button
+                        variant="outline"
+                        className="rounded-xl bg-purple-600 text-purple-600 py-2 text-white hover:bg-purple-700"
+                        onClick={() => navigate(`/draft-history/${draft.id}`)}
+                    >
+                        View Draft History
                     </Button>
                 </div>
             )}

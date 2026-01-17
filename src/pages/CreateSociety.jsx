@@ -89,9 +89,9 @@ export default function CreateSociety() {
                 required: "Join code is required",
               })}
             />
-            {errors.joincode && (
+            {errors.join_code && (
               <p className="text-sm text-red-500 mt-1">
-                {errors.joincode.message}
+                {errors.join_code.message}
               </p>
             )}
           </div>

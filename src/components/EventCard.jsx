@@ -3,7 +3,9 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Calendar, Users } from "lucide-react"
 import { useNavigate } from "react-router-dom";
-
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { cancelEvent, markEventComplete } from "../api/events.api";
 export default function EventCard({
   eventId,
   title,
@@ -15,10 +17,33 @@ export default function EventCard({
   showCancelRegister = false,
   registrationStatus,
   onRegister,
-  onCancel  
+  onCancel
 }) {
   const navigate = useNavigate();
-  
+  const userData = useSelector((state) => state.auth.userData)
+  const [isLeadOrPresidsent, setIsLeadOrPresidsent] = useState(false);
+
+
+
+  const handleCancel = async () => {
+    await cancelEvent(eventId)
+    status = 'cancelled'
+  }
+
+  const handleMarkComplete = async () => {
+    await markEventComplete(eventId)
+    status = 'completed'
+  }
+
+
+  useEffect(() => {
+    const userSociety = userData.societies.filter((s) => s.society_name == societyName);
+    console.log(userSociety[0])
+    if (userSociety) {
+      setIsLeadOrPresidsent(userSociety[0].society_role == 'lead' || userSociety[0].society_role == 'president')
+    }
+  }, [societyName, userData.societies])
+
   return (
     <Card className="w-full rounded-2xl border p-6">
       {/* Top Row */}
@@ -33,7 +58,7 @@ export default function EventCard({
             )}
             {registrationStatus && (
               <Badge variant="secondary" className="rounded-full px-3">
-                Registration Status:  <span className="text-red-500">{registrationStatus}</span>  
+                Registration Status:  <span className="text-red-500">{registrationStatus}</span>
               </Badge>
             )}
           </div>
@@ -44,25 +69,35 @@ export default function EventCard({
         <div className="flex items-center gap-3">
           {showRegister && status !== "completed" && (
             <Button
-              className="rounded-xl bg-purple-600 px-6 hover:bg-purple-700"
-              onClick={()=> onRegister(eventId)}
+              className="cursor-pointer rounded-xl bg-purple-600 px-6 hover:bg-purple-700"
+              onClick={() => onRegister(eventId)}
             >
               Register
             </Button>
           )}
           {showCancelRegister && status !== "completed" && (
             <Button
-              className="rounded-xl bg-purple-600 px-6 hover:bg-purple-700"
+              className="cursor-pointer rounded-xl bg-purple-600 px-6 hover:bg-purple-700"
               onClick={() => onCancel(eventId)}
             >
               Cancel Registration
             </Button>
           )}
-          <Button variant="outline" className="rounded-xl" onClick={()=>navigate(`/event/${eventId}`)}>
+          {
+            isLeadOrPresidsent && (
+              <>
+                <Button className="cursor-pointer rounded-xl bg-purple-600 px-6 hover:bg-purple-700" onClick={()=>navigate(`/update-event/${eventId}`)}>Update</Button>
+                <Button className="cursor-pointer rounded-xl bg-purple-600 px-6 hover:bg-purple-700" onClick={handleCancel}>Cancel</Button>
+                <Button className="cursor-pointer rounded-xl bg-purple-600 px-6 hover:bg-purple-700" onClick={handleMarkComplete}>Mark Complete</Button>
+              </>
+            )
+          }
+          <Button variant="outline" className="cursor-pointer rounded-xl" onClick={() => navigate(`/event/${eventId}`)}>
             View Details
           </Button>
         </div>
       </div>
+
 
       {/* Meta Row */}
       <div className="flex flex-wrap items-center gap-8 text-sm text-muted-foreground">
@@ -77,7 +112,6 @@ export default function EventCard({
           </span>
         )}
       </div>
-
     </Card>
   )
 }

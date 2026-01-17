@@ -3,11 +3,12 @@ import { Button } from "../components";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { DraftCard } from "../components/index";
+import { getDrafts } from "../api/eventDraft.api";
 
 export default function Drafts() {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
-    const [mySocietyPendingDrafts, setMySocietyPendingDrafts] = useState([]);
+    const [mySocietyDrafts, setMySocietyDrafts] = useState([]);
 
     const isLead = userData?.societies?.some(
         (s) => s.society_role === "lead"
@@ -16,18 +17,40 @@ export default function Drafts() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!userData) return;
-        setMySocietyPendingDrafts(userData.pendingDrafts || []);
-        setLoading(false);
+        if (!userData?.societies?.length) return;
+
+        const fetchDrafts = async () => {
+            try {
+                setLoading(true);
+
+                const draftsPerSociety = await Promise.all(
+                    userData.societies.map((s) =>
+                        getDrafts(s.society_id).then(
+                            (res) => res.data.data.drafts
+                        )
+                    )
+                );
+
+                // draftsPerSociety = [ [..], [..], [..] ]
+                const allDrafts = draftsPerSociety.flat();
+                console.log(allDrafts)
+                setMySocietyDrafts(allDrafts);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDrafts();
     }, [userData]);
+
 
     return (
         <div className="min-h-[80vh]  px-6 py-8">
             {loading && (
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {[1, 2, 3].map((i) => (
-                        <div key={i} className="h-40 animate-pulse rounded-2xl bg-gray-200" />
-                    ))}
+
                 </div>
             )}
 
@@ -35,7 +58,7 @@ export default function Drafts() {
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-3xl font-bold text-purple-700">
-                        Pending Event Drafts
+                        Event Drafts
                     </h1>
                 </div>
 
@@ -50,17 +73,17 @@ export default function Drafts() {
             </div>
 
             {/* Empty State */}
-            {mySocietyPendingDrafts.length === 0 ? (
+            {mySocietyDrafts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-2xl bg-white p-10 text-center shadow-sm">
                     <span className="text-4xl">📭</span>
                     <p className="mt-3 text-gray-600">
-                        No pending drafts at the moment
+                        No drafts at the moment
                     </p>
                 </div>
             ) : (
                 /* Draft Cards Grid */
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {mySocietyPendingDrafts.map((draft) => (
+                    {mySocietyDrafts.map((draft) => (
                         <DraftCard
                             key={draft.id}
                             draft={draft}

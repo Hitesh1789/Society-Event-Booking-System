@@ -19,6 +19,9 @@ import CreateSociety from './pages/CreateSociety.jsx'
 import Drafts from './pages/Drafts.jsx'
 import DraftForm from './components/DraftForm.jsx'
 import EventApproval from './pages/EventApproval.jsx'
+import Draft from './pages/Draft.jsx'
+import DraftHistory from './pages/DraftHistory.jsx'
+import UpdateEvent from './pages/UpdateEvent.jsx'
 
 const router = createBrowserRouter([
   {
@@ -107,7 +110,15 @@ const router = createBrowserRouter([
           <Protected authentication>
             <Drafts />
           </Protected>
-        ),
+        )
+      },
+      {
+        path:'/drafts/:draftId',
+        element:(
+          <Protected authentication>
+            <Draft />
+          </Protected>
+        )
       },
       {
         path: '/create-draft',
@@ -122,6 +133,22 @@ const router = createBrowserRouter([
         element: (
           <Protected authentication>
             <EventApproval/>
+          </Protected>
+        )
+      },
+      {
+        path:'/draft-history/:draftId',
+        element:(
+          <Protected authentication>
+            <DraftHistory/>
+          </Protected>
+        )
+      },
+      {
+        path:'/update-event/:eventId',
+        element:(
+          <Protected authentication>
+            <UpdateEvent />
           </Protected>
         )
       }
