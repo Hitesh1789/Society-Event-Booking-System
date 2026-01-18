@@ -22,6 +22,7 @@ import EventApproval from './pages/EventApproval.jsx'
 import Draft from './pages/Draft.jsx'
 import DraftHistory from './pages/DraftHistory.jsx'
 import UpdateEvent from './pages/UpdateEvent.jsx'
+import RegisteredUsers from './pages/RegisteredUsers.jsx'
 
 const router = createBrowserRouter([
   {
@@ -151,16 +152,23 @@ const router = createBrowserRouter([
             <UpdateEvent />
           </Protected>
         )
+      },
+      {
+        path:'/view-registered-users/:eventId',
+        element:(
+          <Protected authentication>
+            <RegisteredUsers/>
+          </Protected>
+        )
       }
-
     ]
   },
 ])
 
 createRoot(document.getElementById('root')).render(
-  //<StrictMode>
+  <StrictMode>
     <Provider store={Store}>
       <RouterProvider router={router} />
     </Provider>
-  //</StrictMode>,
+  </StrictMode>,
 )

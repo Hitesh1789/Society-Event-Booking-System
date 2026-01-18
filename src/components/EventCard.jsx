@@ -1,11 +1,12 @@
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Calendar, Users } from "lucide-react"
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar, MapPin, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { cancelEvent, markEventComplete } from "../api/events.api";
+
 export default function EventCard({
   eventId,
   title,
@@ -17,101 +18,136 @@ export default function EventCard({
   showCancelRegister = false,
   registrationStatus,
   onRegister,
-  onCancel
+  onCancel,
 }) {
   const navigate = useNavigate();
-  const userData = useSelector((state) => state.auth.userData)
-  const [isLeadOrPresidsent, setIsLeadOrPresidsent] = useState(false);
+  const userData = useSelector((state) => state.auth.userData);
 
-
-
-  const handleCancel = async () => {
-    await cancelEvent(eventId)
-    status = 'cancelled'
-  }
-
-  const handleMarkComplete = async () => {
-    await markEventComplete(eventId)
-    status = 'completed'
-  }
-
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isMember, setIsMember] = useState(false);
 
   useEffect(() => {
-    const userSociety = userData.societies.filter((s) => s.society_name == societyName);
-    console.log(userSociety[0])
-    if (userSociety) {
-      setIsLeadOrPresidsent(userSociety[0].society_role == 'lead' || userSociety[0].society_role == 'president')
+    const society = userData?.societies?.find(
+      (s) => s.society_name === societyName
+    );
+    if (society) {
+      setIsAdmin(["lead", "president"].includes(society.society_role));
+      setIsMember(["lead", "president", "member"].includes(society.society_role));
     }
-  }, [societyName, userData.societies])
+  }, [societyName, userData?.societies]);
+
+  const statusStyle = {
+    published: "bg-blue-100 text-blue-700",
+    completed: "bg-green-100 text-green-700",
+    cancelled: "bg-red-100 text-red-700",
+  };
 
   return (
-    <Card className="w-full rounded-2xl border p-6">
-      {/* Top Row */}
-      <div className="flex items-start justify-between gap-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg text-purple-500 font-semibold">{title}</h2>
-            {status && (
-              <Badge variant="secondary" className="rounded-full px-3">
-                Event Status : <span className="text-red-500">{status}</span>
-              </Badge>
-            )}
-            {registrationStatus && (
-              <Badge variant="secondary" className="rounded-full px-3">
-                Registration Status:  <span className="text-red-500">{registrationStatus}</span>
-              </Badge>
-            )}
-          </div>
-          <p className="text-sm text-muted-foreground">{societyName}</p>
-        </div>
+    <Card className="rounded-2xl p-4  shadow-sm">
 
-        {/* Actions */}
-        <div className="flex items-center gap-3">
-          {showRegister && status !== "completed" && (
-            <Button
-              className="cursor-pointer rounded-xl bg-purple-600 px-6 hover:bg-purple-700"
-              onClick={() => onRegister(eventId)}
-            >
-              Register
-            </Button>
-          )}
-          {showCancelRegister && status !== "completed" && (
-            <Button
-              className="cursor-pointer rounded-xl bg-purple-600 px-6 hover:bg-purple-700"
-              onClick={() => onCancel(eventId)}
-            >
-              Cancel Registration
-            </Button>
-          )}
-          {
-            isLeadOrPresidsent && (
-              <>
-                <Button className="cursor-pointer rounded-xl bg-purple-600 px-6 hover:bg-purple-700" onClick={()=>navigate(`/update-event/${eventId}`)}>Update</Button>
-                <Button className="cursor-pointer rounded-xl bg-purple-600 px-6 hover:bg-purple-700" onClick={handleCancel}>Cancel</Button>
-                <Button className="cursor-pointer rounded-xl bg-purple-600 px-6 hover:bg-purple-700" onClick={handleMarkComplete}>Mark Complete</Button>
-              </>
-            )
-          }
-          <Button variant="outline" className="cursor-pointer rounded-xl" onClick={() => navigate(`/event/${eventId}`)}>
-            View Details
-          </Button>
-        </div>
+      {/* Title + Status */}
+      <div className="flex flex-col gap-1">
+        <h2 className="text-base font-semibold text-purple-600">
+          {title}
+        </h2>
+        <p className="text-xs text-muted-foreground">{societyName}</p>
+
+        {status && (
+          <Badge className={`w-fit rounded-full ${statusStyle[status]}`}>
+            {status}
+          </Badge>
+        )}
       </div>
 
-
-      {/* Meta Row */}
-      <div className="flex flex-wrap items-center gap-8 text-sm text-muted-foreground">
+      {/* Meta Info */}
+      <div className="flex flex-col gap-2 text-sm text-muted-foreground">
         {date && (
-          <span className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" /> {date}
-          </span>
+          <div className="flex items-center gap-2">
+            <Calendar size={16} /> {date}
+          </div>
         )}
         {venue && (
-          <span className="flex items-center gap-2">
-            <Users className="h-4 w-4" /> {venue}
-          </span>
+          <div className="flex items-center gap-2">
+            <MapPin size={16} /> {venue}
+          </div>
         )}
       </div>
+
+      {/* Registration Status */}
+      {registrationStatus && (
+        <Badge variant="secondary" className="rounded-full">
+          Registration: {registrationStatus}
+        </Badge>
+      )}
+
+      {/* Primary Action */}
+      <div className="flex flex-col gap-2">
+        {showRegister && status !== "completed" && (
+          <Button
+            className="w-full rounded-xl bg-purple-600 hover:bg-purple-700"
+            onClick={() => onRegister(eventId)}
+          >
+            Register
+          </Button>
+        )}
+
+        {showCancelRegister && (
+          <Button
+            variant="outline"
+            className="w-full rounded-xl"
+            onClick={() => onCancel(eventId)}
+          >
+            Cancel Registration
+          </Button>
+        )}
+
+        <Button
+          variant="outline"
+          className="w-full rounded-xl"
+          onClick={() => navigate(`/event/${eventId}`)}
+        >
+          View Details
+        </Button>
+      </div>
+
+      {/* Secondary / Role Actions */}
+      {(isMember || isAdmin) && (
+        <div className="flex flex-col gap-2 border-t pt-3">
+
+          {isMember && (
+            <Button
+              variant="secondary"
+              className="w-full rounded-xl"
+              onClick={() => navigate(`/view-registered-users/${eventId}`)}
+            >
+              <Users size={16} /> View Registered Users
+            </Button>
+          )}
+
+          {isAdmin && (
+            <>
+              <Button
+                variant="outline"
+                onClick={() => navigate(`/update-event/${eventId}`)}
+              >
+                Update Event
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => cancelEvent(eventId)}
+              >
+                Cancel Event
+              </Button>
+              <Button
+                className="bg-green-600 hover:bg-green-700"
+                onClick={() => markEventComplete(eventId)}
+              >
+                Mark Completed
+              </Button>
+            </>
+          )}
+        </div>
+      )}
     </Card>
-  )
+  );
 }
