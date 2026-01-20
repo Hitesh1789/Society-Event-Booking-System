@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMyRegisterations, registerEvent, cancelRegistration } from "../api/eventRegsiter.api";
 import { EventCard } from "../components";
-
+import { useSelector } from "react-redux";
 export default function MyEvents() {
     const [myRegistrations, setMyRegistrations] = useState([]);
 
@@ -41,6 +41,24 @@ export default function MyEvents() {
         fetchMyRegistrations();
     };
 
+    const showFeedbackButton = (eventId) => {
+        //feedback button for only completed events and registered user
+        return myRegistrations.some(
+            (event) =>
+                event.event_id === eventId &&
+                event.event_status === "completed"
+        );
+    }
+
+    const showEventSummaryButton = (eventId) => {
+        //feedback button for only completed events 
+        return myRegistrations.some(
+            (event) =>
+                event.event_id === eventId &&
+                event.event_status === "completed"
+        );
+    }
+
     return (
         <div className="p-2 flex flex-col gap-4">
             <h1 className="text-2xl font-semibold mb-4">Your registered events are: </h1>
@@ -57,7 +75,9 @@ export default function MyEvents() {
                         showCancelRegister={showCancelRegButton(event.event_id)}
                         registrationStatus={event.registration_status}
                         onCancel={handleCancel}
-                        onRegister = {handleRegister}
+                        onRegister={handleRegister}
+                        showFeedbackButton={showFeedbackButton(event.event_id)}
+                        showEventSummaryButton={showEventSummaryButton(event.event_id)}
                     />
                 ))
             }

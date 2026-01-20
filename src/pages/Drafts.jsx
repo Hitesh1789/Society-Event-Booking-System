@@ -33,7 +33,6 @@ export default function Drafts() {
 
                 // draftsPerSociety = [ [..], [..], [..] ]
                 const allDrafts = draftsPerSociety.flat();
-                console.log(allDrafts)
                 setMySocietyDrafts(allDrafts);
             } catch (error) {
                 console.error(error);

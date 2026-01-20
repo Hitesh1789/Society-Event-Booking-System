@@ -23,6 +23,7 @@ import Draft from './pages/Draft.jsx'
 import DraftHistory from './pages/DraftHistory.jsx'
 import UpdateEvent from './pages/UpdateEvent.jsx'
 import RegisteredUsers from './pages/RegisteredUsers.jsx'
+import EventSummary from './pages/EventSummary.jsx'
 
 const router = createBrowserRouter([
   {
@@ -158,6 +159,14 @@ const router = createBrowserRouter([
         element:(
           <Protected authentication>
             <RegisteredUsers/>
+          </Protected>
+        )
+      },
+      {
+        path: '/event-summary/:eventId',
+        element: (
+          <Protected authentication>
+            <EventSummary />
           </Protected>
         )
       }

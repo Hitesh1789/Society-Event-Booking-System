@@ -19,7 +19,6 @@ export default function DraftCard({ draft }) {
         const fetchDraftInfo = async () => {
             try {
                 const res = await getDraftInfo(draft.id);
-                console.log(draft)
                 setDraftInfo(res.data.data.draft);
             } catch (error) {
                 console.error(error);
