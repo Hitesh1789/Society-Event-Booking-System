@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { assignPresident, getMembers, joinSociety } from "../api/society.api"
 import { useSelector } from "react-redux"
+import { toast } from "sonner"
 
 function SocietyCard({
   description,
@@ -32,7 +33,6 @@ function SocietyCard({
   const [socMembers, setSocMembers] = useState([])
   const [assignLoading, setAssignLoading] = useState(false)
 
-
   const userData = useSelector((state) => state.auth.userData)
 
   const joinHandler = async () => {
@@ -46,6 +46,10 @@ function SocietyCard({
       setError("")
       await joinSociety({ join_code: joinCode })
       setOpen(false)
+      toast.success("Society Joined successfully 🎉", {
+        duration: 2000
+      });
+
       setJoinCode("")
       onJoinSuccess?.()
     } catch (err) {
@@ -94,7 +98,7 @@ function SocietyCard({
             </div>
 
             {userData?.profile?.role === "admin" && !president && (
-              <button className="text-sm px-3 py-1 rounded-full border bg-white cursor-pointer"
+              <button className="bg-purple-600 text-sm px-3 py-1 rounded-full border text-white cursor-pointer"
                 onClick={assignPresidentHandler}>
                 Assign President
               </button>

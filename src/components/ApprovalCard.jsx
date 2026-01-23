@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../store/authSlice";
 import { getUser } from "../api/user.api";
+import { toast } from "sonner";
+
 export default function ApprovalCard({ draft }) {
     const [action, setAction] = useState(null); // request | approve | reject
     const [message, setMessage] = useState("");
@@ -12,15 +14,25 @@ export default function ApprovalCard({ draft }) {
     const dispatch = useDispatch();
 
     const handleSubmit = async () => {
-        await approveOrRejectDraft(draft.id, {
-            action,
-            remarks: message,
-        });
-        setAction(null);
-        setMessage("");
-        const res = await getUser();
-        dispatch(updateUser({ newUserData: res.data.data }))
-        navigate('/event-approval')
+        try {
+            await approveOrRejectDraft(draft.id, {
+                action,
+                remarks: message,
+            });
+            toast.success("Response submitted successfully 🎉", {
+                duration: 2000
+            });
+            setAction(null);
+            setMessage("");
+            const res = await getUser();
+            dispatch(updateUser({ newUserData: res.data.data }))
+            navigate('/event-approval')
+        } catch (err) {
+            toast.error("Response Submission failed ❌", {
+                description: err?.response?.data?.message || "Please try again",
+                duration: 2000,
+            });
+        }
     };
 
     return (
@@ -79,7 +91,6 @@ export default function ApprovalCard({ draft }) {
                     >
                         Reject Draft
                     </Button>
-
                     <Button
                         variant="outline"
                         className="rounded-xl bg-purple-600 text-purple-600 py-2 text-white hover:bg-purple-700"

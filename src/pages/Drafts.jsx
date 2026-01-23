@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { DraftCard } from "../components/index";
 import { getDrafts } from "../api/eventDraft.api";
+import { Link } from "react-router-dom";
 
 export default function Drafts() {
     const navigate = useNavigate();
@@ -46,10 +47,10 @@ export default function Drafts() {
 
 
     return (
-        <div className="min-h-[80vh]  px-6 py-8">
+        <div className="min-h-[80vh]  px-6 py-4 " >
             {loading && (
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-
+                    Loading Drafts...
                 </div>
             )}
 

@@ -4,8 +4,9 @@ import { Input, Button } from "../components";
 import { getEventInfo, updateEvent } from "../api/events.api";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { addEvents,clearEvents } from "../store/eventSlice";
+import { addEvents, clearEvents } from "../store/eventSlice";
 import { getAllUpcomingEvents } from "../api/events.api";
+import { toast } from "sonner";
 export default function UpdateEvent() {
     const { eventId } = useParams();
     const [loading, setLoading] = useState(true);
@@ -53,6 +54,9 @@ export default function UpdateEvent() {
             setApiError("");
             console.log(data)
             await updateEvent(eventId, data);
+            toast.success("Event updated Successfully", {
+                duration: 2000,
+            });
             const fetchedEvents = await getAllUpcomingEvents();
             if (fetchedEvents.data.data) {
                 dispatch(addEvents({ events: fetchedEvents.data.data }))

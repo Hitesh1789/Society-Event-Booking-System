@@ -59,7 +59,7 @@ export default function EventCard({
 
       toast.success("Feedback submitted successfully 🎉", {
         description: "Thank you for sharing your experience",
-        duration: 4000
+        duration: 2000
       });
 
       setOpen(false)
@@ -68,7 +68,7 @@ export default function EventCard({
     } catch (err) {
       toast.error("Submission failed ❌", {
         description: err?.response?.data?.message || "Please try again",
-        duration: 4000,
+        duration: 2000,
       });
 
     } finally {
@@ -94,9 +94,9 @@ export default function EventCard({
 
   return (
     <>
-      <Card className="rounded-2xl p-4  shadow-sm">
+      <Card className="rounded-2xl p-4 shadow-sm">
         {/* Title + Status */}
-        <div className="flex items-start justify-between">
+        <div className="flex gap-2 items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-purple-700">{title}</h2>
             <p className="text-xs text-muted-foreground">{societyName}</p>
@@ -176,7 +176,7 @@ export default function EventCard({
           </div>
         )}
         {isLeadOrPresident && (
-          <div className="mt-4 border-t pt-3 space-y-2">
+          <div className="mt-2 flex gap-2 border-t pt-3 space-y-2">
             <Button
               variant="outline"
               onClick={() => navigate(`/update-event/${eventId}`)}

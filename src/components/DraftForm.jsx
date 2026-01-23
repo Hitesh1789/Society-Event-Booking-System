@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input, Select } from "./index";
 import { useSelector } from "react-redux";
@@ -7,25 +7,31 @@ import { getUser } from "../api/user.api";
 import { updateUser } from "../store/authSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { getDrafts } from "../api/eventDraft.api";
+import { toast } from "sonner";
+
 export default function DraftForm() {
     const {
         register,
         handleSubmit,
+        watch,
         formState: { errors, isSubmitting },
     } = useForm();
 
+    const selectedSocietyId = watch("societyId");
     const [apiError, setApiError] = useState("");
+    const [mySelectedSocietyDrafts, setMySelectedSocietyDrafts] = useState([]);
     const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
-    const mySocieties = userData?.societies.filter((s)=>s.society_role=='lead') || [];
-    const parentDrafts = userData?.pendingDrafts || [];
+    const mySocieties = userData?.societies.filter((s) => s.society_role == 'lead') || [];
+
     const dispatch = useDispatch();
 
     const createDraft = async (data) => {
         try {
             setApiError("");
             const {
-                title, description, proposedDate, proposedLocation, societyId,parentDraftId
+                title, description, proposedDate, proposedLocation, societyId, parentDraftId
             } = data;
 
             const res = {
@@ -33,12 +39,15 @@ export default function DraftForm() {
                 description,
                 proposedDate,
                 proposedLocation,
-                societyId : Number(societyId)
+                societyId: Number(societyId)
             }
-            if(parentDraftId) res[parentDraftId] = Number(parentDraftId)
+            if (parentDraftId) res.parentDraftId = Number(parentDraftId)
             await createEventDraft(res);
+            toast.success("Draft Created Successfully",{
+                duration:2000
+            })
             const user = await getUser();
-            dispatch(updateUser({newUserData:user.data.data}))
+            dispatch(updateUser({ newUserData: user.data.data }))
             navigate('/drafts')
         } catch (err) {
             setApiError(
@@ -48,10 +57,35 @@ export default function DraftForm() {
         }
     };
 
+    useEffect(() => {
+        if (!userData?.societies?.length) return;
+
+        const fetchDrafts = async () => {
+            try {
+
+                const draftsPerSociety = await Promise.all(
+                    userData.societies.map((s) =>
+                        getDrafts(s.society_id).then(
+                            (res) => res.data.data.drafts
+                        )
+                    )
+                );
+
+                // draftsPerSociety = [ [..], [..], [..] ]
+                const Drafts = draftsPerSociety.flat().filter((d)=>Number(d.society_id)===Number(selectedSocietyId) && (d.status=='changes_requested' || d.status=='rejected'));
+                setMySelectedSocietyDrafts(Drafts);
+                console.log(mySelectedSocietyDrafts)
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchDrafts();
+    }, [userData,selectedSocietyId]);
     return (
         <div className="flex justify-center items-center min-h-[85vh] px-4 ">
+            {console.log(mySelectedSocietyDrafts)}
             <div className="w-full max-w-lg rounded-2xl border bg-white p-8 shadow-md">
-
                 {/* Header */}
                 <h1 className="text-3xl font-bold text-purple-600 mb-2">
                     Create Event Draft
@@ -131,10 +165,10 @@ export default function DraftForm() {
                     )}
 
                     {/* Parent Draft */}
-                    {parentDrafts.length > 0 && (
+                    {selectedSocietyId && mySelectedSocietyDrafts.length > 0 && (
                         <Select
                             label="Parent Draft : "
-                            options={parentDrafts.map((d) => ({
+                            options={mySelectedSocietyDrafts.map((d) => ({
                                 label: d.title,
                                 value: d.id,
                             }))}

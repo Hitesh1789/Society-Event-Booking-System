@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMyRegisterations, registerEvent, cancelRegistration } from "../api/eventRegsiter.api";
 import { EventCard } from "../components";
-import { useSelector } from "react-redux";
 export default function MyEvents() {
     const [myRegistrations, setMyRegistrations] = useState([]);
 

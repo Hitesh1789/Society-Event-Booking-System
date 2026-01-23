@@ -39,10 +39,6 @@ export default function DraftHistoryCard({ draft, societyMap }) {
                 </p>
 
                 <p>
-                    <span className="font-medium">Draft ID:</span> {draft.id}
-                </p>
-
-                <p>
                     <span className="font-medium">Date:</span>{" "}
                     {getDate(draft.proposed_date)}
                 </p>
@@ -50,6 +46,16 @@ export default function DraftHistoryCard({ draft, societyMap }) {
                 <p>
                     <span className="font-medium">Location:</span>{" "}
                     {draft.proposed_location || "—"}
+                </p>
+
+                <p>
+                    <span className="font-medium">Version:</span>{" "}
+                    {draft.version || "—"}
+                </p>
+
+                <p>
+                    <span className="font-medium">Created Date:</span>{" "}
+                    {getDate(draft.created_at)}
                 </p>
             </div>
         </div>

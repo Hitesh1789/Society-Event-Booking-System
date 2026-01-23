@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { getMembers, getSocietyInfo } from "../api/society.api"
-
+import {toast} from "sonner"
 import {
   Card,
   CardContent,
@@ -49,8 +49,15 @@ export default function Society() {
     try {
       await assignLead(society.id, {"userId": leadId})
       fetchSociety()
+      toast.success("Lead assigned Successfully", {
+        duration: 2000,
+      });
     } catch (err) {
       console.log(err)
+      toast.error("Lead not assigned.", {
+        description:err?.response?.data?.message || "Please try again",
+        duration: 2000,
+      });
     }
   }
 

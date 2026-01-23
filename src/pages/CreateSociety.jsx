@@ -3,7 +3,8 @@ import { useState } from "react";
 import { Input, Button } from "../components";
 import { createSociety, getSocieties } from "../api/society.api";
 import { useDispatch } from "react-redux";
-import { clearSocieties,addSocieties } from "../store/societiesSlice";
+import { clearSocieties, addSocieties } from "../store/societiesSlice";
+import {toast} from "sonner"
 export default function CreateSociety() {
   const {
     register,
@@ -15,14 +16,17 @@ export default function CreateSociety() {
   const [apiError, setApiError] = useState("");
 
   const dispatch = useDispatch();
-  
+
   const submit = async (data) => {
     try {
       setApiError("");
       await createSociety(data);
+      toast.success("Scoiety created Successfully", {
+        duration: 2000,
+      });
       dispatch(clearSocieties());
       const socRes = await getSocieties();
-      dispatch(addSocieties({ societies: socRes.data.data.societies}));
+      dispatch(addSocieties({ societies: socRes.data.data.societies }));
       reset(); // clear form on success
     } catch (error) {
       setApiError(
