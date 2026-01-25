@@ -1,5 +1,5 @@
 ﻿import {
-  LayoutGrid, Users, Star, CalendarDays, ClipboardCheck, UserRound,
+  LayoutGrid, Users, Star, CalendarDays, SquarePen, UserRound,ClipboardCheck,
   Calendar, User, LogOut,
   LogIn
 } from "lucide-react"
@@ -98,7 +98,7 @@ export default function SideBar() {
                           onClick={() => navigate("/drafts")}
                           className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-purple-100 transition-all cursor-pointer"
                         >
-                          <ClipboardCheck className="h-5 w-5 text-gray-600" />
+                          <SquarePen className="h-5 w-5 text-gray-600" />
                           <span className="text-gray-800">Drafts</span>
                         </button>
                       </SidebarMenuButton>

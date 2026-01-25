@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { DraftCard } from "../components/index";
 import { getDrafts } from "../api/eventDraft.api";
-import { Link } from "react-router-dom";
 
 export default function Drafts() {
     const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import { useState ,useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input, Select } from "./index";
 import { useSelector } from "react-redux";
@@ -31,8 +31,14 @@ export default function DraftForm() {
         try {
             setApiError("");
             const {
-                title, description, proposedDate, proposedLocation, societyId, parentDraftId
+                title,
+                description,
+                proposedDate,
+                proposedLocation,
+                societyId,
+                parentDraftId,
             } = data;
+
 
             const res = {
                 title,
@@ -41,10 +47,11 @@ export default function DraftForm() {
                 proposedLocation,
                 societyId: Number(societyId)
             }
-            if (parentDraftId) res.parentDraftId = Number(parentDraftId)
+            if (parentDraftId !== "") res.parentDraftId = Number(parentDraftId)
+            console.log(res)
             await createEventDraft(res);
-            toast.success("Draft Created Successfully",{
-                duration:2000
+            toast.success("Draft Created Successfully", {
+                duration: 2000
             })
             const user = await getUser();
             dispatch(updateUser({ newUserData: user.data.data }))
@@ -72,7 +79,7 @@ export default function DraftForm() {
                 );
 
                 // draftsPerSociety = [ [..], [..], [..] ]
-                const Drafts = draftsPerSociety.flat().filter((d)=>Number(d.society_id)===Number(selectedSocietyId) && (d.status=='changes_requested' || d.status=='rejected'));
+                const Drafts = draftsPerSociety.flat().filter((d) => Number(d.society_id) === Number(selectedSocietyId) && (d.status == 'changes_requested' || d.status == 'rejected'));
                 setMySelectedSocietyDrafts(Drafts);
                 console.log(mySelectedSocietyDrafts)
             } catch (error) {
@@ -81,10 +88,11 @@ export default function DraftForm() {
         };
 
         fetchDrafts();
-    }, [userData,selectedSocietyId]);
+    }, [userData, selectedSocietyId]);
+
     return (
         <div className="flex justify-center items-center min-h-[85vh] px-4 ">
-            {console.log(mySelectedSocietyDrafts)}
+
             <div className="w-full max-w-lg rounded-2xl border bg-white p-8 shadow-md">
                 {/* Header */}
                 <h1 className="text-3xl font-bold text-purple-600 mb-2">
@@ -168,11 +176,13 @@ export default function DraftForm() {
                     {selectedSocietyId && mySelectedSocietyDrafts.length > 0 && (
                         <Select
                             label="Parent Draft : "
-                            options={mySelectedSocietyDrafts.map((d) => ({
+                            options={[{ label: "Start New Draft (No Parent)", value: "" },
+                            ...mySelectedSocietyDrafts.map((d) => ({
                                 label: d.title,
                                 value: d.id,
-                            }))}
-                            {...register("parentDraftId", { required: "Description is required" })}
+                            }))
+                            ]}
+                            {...register("parentDraftId")}
                         />
                     )}
 

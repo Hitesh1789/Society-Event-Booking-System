@@ -3,9 +3,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
-import { cancelEvent, markEventComplete } from "../api/events.api";
+import { cancelEvent, markEventComplete, getAllUpcomingEvents } from "../api/events.api";
 import { submitEventFeedback } from "../api/eventFeedback";
 import {
   Dialog,
@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import StarRating from "../components/StarRating";
 import { toast } from "sonner";
+import { addEvents, clearEvents } from "../store/eventSlice";
 
 export default function EventCard({
   eventId,
@@ -42,6 +43,7 @@ export default function EventCard({
   const [isMember, setIsMember] = useState(false);
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const dispatch = useDispatch();
 
 
   const handleFeedback = async () => {
@@ -186,14 +188,57 @@ export default function EventCard({
 
             <Button
               variant="destructive"
-              onClick={() => cancelEvent(eventId)}
+              onClick={async () => {
+                try {
+                  await cancelEvent(eventId)
+                  toast.success("Event cancelled Successfully", {
+                    duration: 2000,
+                  });
+                  const fetchedEvents = await getAllUpcomingEvents();
+                  if (fetchedEvents.data.data) {
+                    dispatch(addEvents({ events: fetchedEvents.data.data }))
+                  }
+                  else {
+                    dispatch(clearEvents())
+                  }
+
+                } catch (error) {
+                  toast.error("Something went wrong! ", {
+                    duration: 2000,
+                    description: error?.response?.data?.message || "Something went wrong. Try again."
+                  })
+                }
+              }
+              }
             >
               Cancel Event
             </Button>
 
             <Button
               className="bg-green-600 hover:bg-green-700"
-              onClick={() => markEventComplete(eventId)}
+              onClick={async () => {
+                try {
+                  await markEventComplete(eventId)
+                  toast.success("Event marked completed Successfully", {
+                    duration: 2000,
+                  });
+                  const fetchedEvents = await getAllUpcomingEvents();
+                  if (fetchedEvents.data.data) {
+                    dispatch(addEvents({ events: fetchedEvents.data.data }))
+                  }
+                  else {
+                    dispatch(clearEvents())
+                  }
+
+                } catch (error) {
+                  toast.error("Something went wrong! ", {
+                    duration: 2000,
+                    description: error?.response?.data?.message || "Something went wrong. Try again."
+                  })
+                }
+              }
+              }
+
             >
               Mark Completed
             </Button>
@@ -217,13 +262,13 @@ export default function EventCard({
             <Button
               variant="secondary"
               className="w-full rounded-xl"
-              onClick={() =>navigate(`/event-summary/${eventId}`)}
+              onClick={() => navigate(`/event-summary/${eventId}`)}
             >
               Event Summary
             </Button>
           )
         }
-      </Card>
+      </Card >
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="rounded-xl">

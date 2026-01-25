@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card"
-import { Users, CalendarDays, ClipboardCheck, MessageSquareMore } from "lucide-react"
+import { Users, CalendarDays, ClipboardCheck, MessageSquareMore,SquarePen } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { getAllUpcomingEvents } from "../api/events.api";
@@ -52,14 +52,14 @@ export default function Dashboard() {
   const stats = [
     {
       title: "My Societies",
-      value: userData?.societies.length,
+      value: userData?.societies?.length,
       subtitle: "Active memberships",
       icon: Users,
       color: "text-purple-600 bg-purple-100"
     },
     {
       title: "Upcoming Events",
-      value: events.length,
+      value: events?.length,
       subtitle: "Across all societies",
       icon: CalendarDays,
       color: "text-blue-600 bg-blue-100"
@@ -101,13 +101,13 @@ export default function Dashboard() {
           </Card>
         ))}
         {
-          (userData.societies.some((s) => s.society_role === "president") || userData?.profile.role == 'admin') ? (
+          (userData?.societies.some((s) => s.society_role === "president") || userData?.profile.role == 'admin') ? (
             <Card
               className="p-3 text-center rounded-2xl shadow-sm hover:shadow-md transition-shadow border"
             >
               <div className="flex flex-col gap-2 items-center">
                 <span className="text-gray-500 text-sm">Pending Approvals</span>
-                <span className="text-3xl font-bold text-gray-900 mt-1">{userData.pendingApprovals.length}</span>
+                <span className="text-3xl font-bold text-gray-900 mt-1">{userData?.pendingApprovals.length}</span>
                 <span className="text-gray-400 text-xs mt-1">Awaiting your input</span>
                 <span
                   className={`h-12 w-12 rounded-xl flex items-center justify-center text-yellow-600 bg-yellow-100`}
@@ -119,7 +119,7 @@ export default function Dashboard() {
           ) : null
         }
         {
-          (userData.societies.some((s) => s.society_role === "lead") || userData?.profile.role == 'admin') ? (
+          (userData?.societies.some((s) => s.society_role === "lead") || userData?.profile.role == 'admin') ? (
             <Card
               className="p-3 text-center rounded-2xl shadow-sm hover:shadow-md transition-shadow border"
             >
@@ -130,7 +130,7 @@ export default function Dashboard() {
                 <span
                   className={`h-12 w-12 rounded-xl flex items-center justify-center text-yellow-600 bg-yellow-100`}
                 >
-                  <MessageSquareMore className="h-6 w-6" />
+                  <SquarePen className="h-6 w-6" />
                 </span>
               </div>
             </Card>

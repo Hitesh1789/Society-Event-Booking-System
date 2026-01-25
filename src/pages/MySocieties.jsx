@@ -46,8 +46,8 @@ export default function MySocieties() {
         (mySocieties.length == 0) ? (
             <div className="flex flex-wrap">
                 <div className="p-2 w-full">
-                    <h1 className="text-2xl font-bold">
-                        {<>Sorry ,You Have not joined any Society yet.</>}
+                    <h1 className="text-xl text-gray-500 text-center">
+                        No society memberships found
                     </h1>
                 </div>
             </div>

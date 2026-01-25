@@ -11,7 +11,7 @@ function Home() {
     const [myRegistrations, setMyRegistrations] = useState([]);
     const [loadingRegs, setLoadingRegs] = useState(true);
     const dispatch = useDispatch();
-
+    const [loadingEvents, setLoadingEvents] = useState(true);
     // format date
     const getDate = (apiDate) => {
         return new Date(apiDate).toLocaleDateString("en-IN");
@@ -28,24 +28,30 @@ function Home() {
     useEffect(() => {
         fetchMyRegistrations();
     }, []);
+useEffect(() => {
+    if (events.length > 0) {
+        setLoadingEvents(false);
+        return;
+    }
 
-    useEffect(() => {
-        if (events.length > 0) return // STOP API CALL
-        (async () => {
-            try {
-                const fetchedEvents = await getAllUpcomingEvents();
-                if (fetchedEvents.data.data) {
-                    dispatch(addEvents({ events: fetchedEvents.data.data }))
-                }
-                else {
-                    dispatch(clearEvents())
-                }
+    (async () => {
+        try {
+            setLoadingEvents(true);
+            const fetchedEvents = await getAllUpcomingEvents();
+
+            if (fetchedEvents.data.data) {
+                dispatch(addEvents({ events: fetchedEvents.data.data }));
+            } else {
+                dispatch(clearEvents());
             }
-            catch (error) {
-                console.log("Error while fetching all socities: ", error)
-            }
-        })();
-    }, [events.length])
+        } catch (error) {
+            console.log("Error while fetching events: ", error);
+        } finally {
+            setLoadingEvents(false);
+        }
+    })();
+}, [events.length, dispatch]);
+
 
     const showCancelRegButton = (eventId) => {
         if (loadingRegs) return false;
@@ -99,32 +105,68 @@ function Home() {
         };
     };
 
-
     return (
-        <div className="flex">
-            <div className="flex-1 p-2">
-                <h1 className="text-2xl font-semibold mb-4">Upcoming Events</h1>
-                <div className="flex flex-wrap gap-3">
-                    {
-                        events.map((event) => (
-                            <EventCard key={event.id}
-                                eventId={event.id}
-                                title={event.name}
-                                status={event.status}
-                                societyName={event.society_name}
-                                date={getDate(event.date)}
-                                venue={event.location}
-                                showRegister={showRegisterButton(event.id)}
-                                showCancelRegister={showCancelRegButton(event.id)}
-                                onCancel={handleCancel}
-                                onRegister={handleRegister}
-                            />
-                        ))
-                    }
+    <div className="flex">
+        <div className="flex-1 p-2">
+
+            <h1 className="text-2xl font-semibold mb-4">
+                Upcoming Events
+            </h1>
+
+            {/* EVENTS LOADING */}
+            {loadingEvents && (
+                <div className="flex justify-center items-center min-h-[50vh] text-gray-500">
+                    Loading upcoming events...
                 </div>
-            </div>
+            )}
+
+            {/* EMPTY STATE */}
+            {!loadingEvents && events.length === 0 && (
+                <div className="flex justify-center items-center min-h-[60vh] px-4">
+                    <div className="max-w-md text-center rounded-2xl border bg-white p-8 shadow-sm">
+
+                        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
+                            📅
+                        </div>
+
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                            No Upcoming Events
+                        </h2>
+
+                        <p className="text-sm text-gray-500">
+                            There are no upcoming events at the moment.
+                            Please check back later.
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* EVENTS LIST */}
+            {!loadingEvents && events.length > 0 && (
+                <div className="flex flex-wrap gap-3">
+                    {events.map((event) => (
+                        <EventCard
+                            key={event.id}
+                            eventId={event.id}
+                            title={event.name}
+                            status={event.status}
+                            societyName={event.society_name}
+                            date={getDate(event.date)}
+                            venue={event.location}
+                            showRegister={showRegisterButton(event.id)}
+                            showCancelRegister={showCancelRegButton(event.id)}
+                            onCancel={handleCancel}
+                            onRegister={handleRegister}
+                        />
+                    ))}
+                </div>
+            )}
+
         </div>
-    );
+    </div>
+);
+
+    
 }
 
 export default Home;

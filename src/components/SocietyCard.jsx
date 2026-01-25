@@ -20,7 +20,6 @@ function SocietyCard({
   socName,
   president,
   members,
-  events = 0,
   isMember = false,
   onJoinSuccess,
   socId
@@ -78,7 +77,6 @@ function SocietyCard({
 
       setSocMembers(membersList)
       setAssignOpen(true)
-
     } catch (error) {
       console.log(error)
     } finally {
@@ -109,12 +107,9 @@ function SocietyCard({
 
           <p className="text-gray-600">{description}</p>
 
-          <div className="flex items-center gap-6 text-sm text-gray-700">
+          <div className="flex items-center gap-6 text-sm text-gray-700 ">
             <span className="flex items-center gap-2">
               <Users className="h-4 w-4" /> {members} members
-            </span>
-            <span className="flex items-center gap-2">
-              <CalendarDays className="h-4 w-4" /> {events} events
             </span>
           </div>
 
@@ -214,10 +209,16 @@ function SocietyCard({
                     try {
                       setAssignLoading(true)
                       await assignPresident(socId, { "userId": member.id })
+                      toast.success("President Assigned successfully 🎉", {
+                        duration: 2000
+                      });
                       setAssignOpen(false)
                       onJoinSuccess?.()
                     } catch (err) {
                       console.log(err)
+                      toast.error("Please Try Again", {
+                        duration: 2000
+                      });
                     } finally {
                       setAssignLoading(false)
                     }
