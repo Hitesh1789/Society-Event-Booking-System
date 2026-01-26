@@ -5,7 +5,7 @@ import { getMyRegisterations, registerEvent, cancelRegistration } from "../api/e
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar, Clock, MapPin, Share2, Mail } from "lucide-react"
+import { Calendar, MapPin } from "lucide-react"
 
 export default function Event() {
   const { eventId } = useParams()
@@ -59,11 +59,6 @@ export default function Event() {
     day: "numeric",
   })
 
-  //check
-  const time = dateObj.toLocaleTimeString("en-IN", {
-    hour: "2-digit",
-    minute: "2-digit",
-  })
 
   const handleCancel = async () => {
     await cancelRegistration(eventId);
@@ -118,10 +113,6 @@ export default function Event() {
           <div className="flex items-center gap-2 text-sm">
             <Calendar className="h-4 w-4" />
             {formattedDate}
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Clock className="h-4 w-4" />
-            {time}
           </div>
           <div className="flex items-center gap-2 text-sm">
             <MapPin className="h-4 w-4" />
