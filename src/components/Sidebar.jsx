@@ -1,7 +1,9 @@
 ﻿import {
   LayoutGrid, Users, Star, CalendarDays, SquarePen, UserRound,ClipboardCheck,
   Calendar, User, LogOut,
-  LogIn
+  LogIn,
+  Lock,
+  Pencil
 } from "lucide-react"
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
@@ -108,6 +110,28 @@ export default function SideBar() {
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <button
+                      onClick={()=>navigate("/change-password")}
+                      className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-purple-100 transition-all cursor-pointer"
+                    >
+                      <Lock className="h-5 w-5 text-gray-600" />
+                      <span className="text-gray-800">Change Password</span>
+                    </button>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <button
+                      onClick={()=>navigate("/update-profile")}
+                      className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-purple-100 transition-all cursor-pointer"
+                    >
+                      <Pencil className="h-5 w-5 text-gray-600" />
+                      <span className="text-gray-800">Update Profile</span>
+                    </button>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <button
                       onClick={logoutHandler}
                       className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-purple-100 transition-all cursor-pointer"
                     >
@@ -128,7 +152,7 @@ export default function SideBar() {
           </div>
 
           <div>
-            <p className="text-sm font-semibold">{userData?.profile?.name}</p> {/* change */}
+            <p className="text-sm font-semibold">{userData?.profile?.name}</p>
             <span className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-md">
               {userData?.profile?.role}
             </span>

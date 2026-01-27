@@ -52,7 +52,7 @@ export default function UpdateEvent() {
     const submit = async (data) => {
         try {
             setApiError("");
-            console.log(data)
+            //console.log(data)
             await updateEvent(eventId, data);
             toast.success("Event updated Successfully", {
                 duration: 2000,
