@@ -102,7 +102,7 @@ export default function MyEvents() {
 
             {/* EVENT LIST */}
             {!loading && myRegistrations.length > 0 && (
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4">
                     {myRegistrations.map((event) => (
                         <EventCard
                             key={event.event_id}
