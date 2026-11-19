@@ -105,9 +105,9 @@ function SocietyCard({
 
           <h2 className="text-xl font-semibold">{socName}</h2>
 
-          <p className="text-gray-600">{description}</p>
+          <p className="text-muted-foreground">{description}</p>
 
-          <div className="flex items-center gap-6 text-sm text-gray-700 ">
+          <div className="flex items-center gap-6 text-sm text-muted-foreground ">
             <span className="flex items-center gap-2">
               <Users className="h-4 w-4" /> {members} members
             </span>
@@ -198,7 +198,7 @@ function SocietyCard({
               >
                 <div>
                   <p className="font-medium">{member.name}</p>
-                  <p className="text-sm text-gray-500">{member.email}</p>
+                  <p className="text-sm text-muted-foreground">{member.email}</p>
                 </div>
 
                 <Button

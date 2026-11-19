@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { DraftCard } from "../components/index";
 import { getDrafts } from "../api/eventDraft.api";
+import { Loader2 } from "lucide-react";
 
 export default function Drafts() {
     const navigate = useNavigate();
@@ -48,15 +49,16 @@ export default function Drafts() {
     return (
         <div className="min-h-[80vh]  px-6 py-4 " >
             {loading && (
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    Loading Drafts...
+                <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 text-muted-foreground">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <p className="text-sm">Loading drafts...</p>
                 </div>
             )}
 
             {/* Header */}
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-purple-700">
+                    <h1 className="text-2xl font-semibold mb-4">
                         Event Drafts
                     </h1>
                 </div>

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearEvents, addEvents } from "../store/eventSlice";
 import { getMyRegisterations, cancelRegistration, registerEvent } from "../api/eventRegsiter.api";
 import { toast } from "sonner";
+import { CalendarX, Loader2 } from "lucide-react";
 
 function Home() {
     const events = useSelector((state) => state.event.events);
@@ -12,6 +13,7 @@ function Home() {
     const [loadingRegs, setLoadingRegs] = useState(true);
     const dispatch = useDispatch();
     const [loadingEvents, setLoadingEvents] = useState(true);
+
     // format date
     const getDate = (apiDate) => {
         return new Date(apiDate).toLocaleDateString("en-IN");
@@ -28,30 +30,30 @@ function Home() {
     useEffect(() => {
         fetchMyRegistrations();
     }, []);
-useEffect(() => {
-    if (events.length > 0) {
-        setLoadingEvents(false);
-        return;
-    }
 
-    (async () => {
-        try {
-            setLoadingEvents(true);
-            const fetchedEvents = await getAllUpcomingEvents();
-
-            if (fetchedEvents.data.data) {
-                dispatch(addEvents({ events: fetchedEvents.data.data }));
-            } else {
-                dispatch(clearEvents());
-            }
-        } catch (error) {
-            console.log("Error while fetching events: ", error);
-        } finally {
+    useEffect(() => {
+        if (events.length > 0) {
             setLoadingEvents(false);
+            return;
         }
-    })();
-}, [events.length, dispatch]);
 
+        (async () => {
+            try {
+                setLoadingEvents(true);
+                const fetchedEvents = await getAllUpcomingEvents();
+
+                if (fetchedEvents.data.data) {
+                    dispatch(addEvents({ events: fetchedEvents.data.data }));
+                } else {
+                    dispatch(clearEvents());
+                }
+            } catch (error) {
+                console.log("Error while fetching events: ", error);
+            } finally {
+                setLoadingEvents(false);
+            }
+        })();
+    }, [events.length, dispatch]);
 
     const showCancelRegButton = (eventId) => {
         if (loadingRegs) return false;
@@ -106,34 +108,37 @@ useEffect(() => {
     };
 
     return (
-    <div className="flex">
-        <div className="flex-1 p-2">
+        <div className="w-full p-2 sm:p-4">
 
-            <h1 className="text-2xl font-semibold mb-4">
-                Upcoming Events
-            </h1>
+            {/* Page heading */}
+            <div className="mb-6">
+                <h1 className="text-2xl font-semibold mb-4">
+                    Upcoming Events
+                </h1>
+            </div>
 
             {/* EVENTS LOADING */}
             {loadingEvents && (
-                <div className="flex justify-center items-center min-h-[50vh] text-gray-500">
-                    Loading upcoming events...
+                <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-muted-foreground">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <p className="text-sm">Loading upcoming events...</p>
                 </div>
             )}
 
             {/* EMPTY STATE */}
             {!loadingEvents && events.length === 0 && (
-                <div className="flex justify-center items-center min-h-[60vh] px-4">
-                    <div className="max-w-md text-center rounded-2xl border bg-white p-8 shadow-sm">
+                <div className="flex min-h-[50vh] items-center justify-center px-4">
+                    <div className="max-w-md rounded-2xl border bg-card p-8 text-center shadow-sm">
 
-                        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
-                            📅
+                        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-300">
+                            <CalendarX className="h-7 w-7" />
                         </div>
 
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                        <h2 className="mb-2 text-2xl font-bold text-foreground">
                             No Upcoming Events
                         </h2>
 
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground">
                             There are no upcoming events at the moment.
                             Please check back later.
                         </p>
@@ -143,7 +148,7 @@ useEffect(() => {
 
             {/* EVENTS LIST */}
             {!loadingEvents && events.length > 0 && (
-                <div className="flex flex-wrap gap-3">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                     {events.map((event) => (
                         <EventCard
                             key={event.id}
@@ -163,10 +168,7 @@ useEffect(() => {
             )}
 
         </div>
-    </div>
-);
-
-    
+    );
 }
 
 export default Home;

@@ -1,30 +1,57 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Input, Select } from "./index";
-import { useSelector } from "react-redux";
-import { createEventDraft } from "../api/eventDraft.api";
-import { getUser } from "../api/user.api";
-import { updateUser } from "../store/authSlice";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { getDrafts } from "../api/eventDraft.api";
+import { FilePlus2, Type, FileText, CalendarDays, MapPin, Loader2, AlertCircle } from "lucide-react";
+
+import { createEventDraft, getDrafts } from "../api/eventDraft.api";
+import { getUser } from "../api/user.api";
+import { updateUser } from "../store/authSlice";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    CardContent,
+} from "@/components/ui/card";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
+
+// same look as the shadcn Input, used for the native select boxes
+const selectClass =
+    "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30 dark:[color-scheme:dark] cursor-pointer";
 
 export default function DraftForm() {
-    const {
-        register,
-        handleSubmit,
-        watch,
-        formState: { errors, isSubmitting },
-    } = useForm();
+    const form = useForm({
+        defaultValues: {
+            societyId: "",
+            title: "",
+            description: "",
+            proposedDate: "",
+            proposedLocation: "",
+            parentDraftId: "",
+        },
+    });
+    const { isSubmitting } = form.formState;
 
     const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
-    const selectedSocietyId = watch("societyId");
+    const selectedSocietyId = form.watch("societyId");
     const [apiError, setApiError] = useState("");
     const [mySelectedSocietyDrafts, setMySelectedSocietyDrafts] = useState([]);
-    const mySocieties = userData?.societies.filter((s) => s.society_role == 'lead') || [];
+    const mySocieties = userData?.societies?.filter((s) => s.society_role == 'lead') || [];
     const dispatch = useDispatch();
+
     const createDraft = async (data) => {
         try {
             setApiError("");
@@ -61,6 +88,7 @@ export default function DraftForm() {
             );
         }
     };
+
     useEffect(() => {
         if (!userData?.societies?.length) return;
         const fetchDrafts = async () => {
@@ -84,110 +112,200 @@ export default function DraftForm() {
 
         fetchDrafts();
     }, [userData, selectedSocietyId]);
+
     return (
-        <div className="flex justify-center items-center min-h-[85vh] px-4 ">
-
-            <div className="w-full max-w-lg rounded-2xl border bg-white p-8 shadow-md">
-                {/* Header */}
-                <h1 className="text-3xl font-bold text-purple-600 mb-2">
-                    Create Event Draft
-                </h1>
-                <p className="text-sm text-gray-500 mb-6">
-                    Submit an event idea for approval by selecting a society.
-                </p>
-
-                {/* API Error */}
-                {apiError && (
-                    <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+        <div className="flex min-h-[85vh] items-center justify-center px-4 py-10">
+            <Card className="w-full max-w-lg shadow-lg">
+                <CardHeader className="space-y-1 text-center">
+                    <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-600 text-white shadow-md">
+                        <FilePlus2 className="h-6 w-6" />
                     </div>
-                )}
-                <form onSubmit={handleSubmit(createDraft)} className="space-y-5">
+                    <CardTitle className="text-2xl font-bold">
+                        Create Event Draft
+                    </CardTitle>
+                    <CardDescription>
+                        Submit an event idea for approval by selecting a society.
+                    </CardDescription>
+                </CardHeader>
 
-                    {/* Society */}
-                    <Select
-                        label="Select Society : "
-                        options={mySocieties.map((s) => ({
-                            label: s.society_name,
-                            value: s.society_id,
-                        }))}
-                        {...register("societyId", { required: true })}
-                    />
-                    {errors.societyId && (
-                        <p className="text-sm text-red-500">Society is required</p>
+                <CardContent>
+                    {/* API Error */}
+                    {apiError && (
+                        <div className="mb-5 flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+                            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                            <span>{apiError}</span>
+                        </div>
                     )}
 
-                    {/* Title */}
-                    <Input
-                        label="Draft Title : "
-                        placeholder="Enter event title"
-                        {...register("title", { required: "Title is required" })}
-                    />
-                    {errors.title && (
-                        <p className="text-sm text-red-500">{errors.title.message}</p>
-                    )}
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(createDraft)} className="space-y-5">
 
-                    {/* Description */}
-                    <Input
-                        label="Description : "
-                        placeholder="Brief event description"
-                        {...register("description", { required: "Description is required" })}
-                    />
-                    {errors.description && (
-                        <p className="text-sm text-red-500">{errors.description.message}</p>
-                    )}
+                            {/* Society */}
+                            <FormField
+                                control={form.control}
+                                name="societyId"
+                                rules={{ required: "Society is required" }}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Select Society</FormLabel>
+                                        <FormControl>
+                                            <select className={selectClass} {...field}>
+                                                <option value="">Select a society</option>
+                                                {mySocieties.map((s) => (
+                                                    <option
+                                                        key={s.society_id}
+                                                        value={s.society_id}
+                                                        className="bg-background text-foreground"
+                                                    >
+                                                        {s.society_name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                    {/* Date */}
-                    <Input
-                        type="date"
-                        label="Proposed Date : "
-                        {...register("proposedDate", {
-                            required: "Proposed date is required",
-                        })}
-                    />
-                    {errors.proposedDate && (
-                        <p className="text-sm text-red-500">
-                            {errors.proposedDate.message}
-                        </p>
-                    )}
+                            {/* Title */}
+                            <FormField
+                                control={form.control}
+                                name="title"
+                                rules={{ required: "Title is required" }}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Draft Title</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Type className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                                <Input
+                                                    placeholder="Enter event title"
+                                                    className="pl-10"
+                                                    {...field}
+                                                />
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                    {/* Location */}
-                    <Input
-                        label="Proposed Location : "
-                        placeholder="Eg: Main Auditorium"
-                        {...register("proposedLocation", {
-                            required: "Location is required",
-                        })}
-                    />
-                    {errors.proposedLocation && (
-                        <p className="text-sm text-red-500">
-                            {errors.proposedLocation.message}
-                        </p>
-                    )}
+                            {/* Description */}
+                            <FormField
+                                control={form.control}
+                                name="description"
+                                rules={{ required: "Description is required" }}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Description</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <FileText className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                                <Input
+                                                    placeholder="Brief event description"
+                                                    className="pl-10"
+                                                    {...field}
+                                                />
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                    {/* Parent Draft */}
-                    {selectedSocietyId && mySelectedSocietyDrafts.length > 0 && (
-                        <Select
-                            label="Parent Draft : "
-                            options={[{ label: "Start New Draft (No Parent)", value: "" },
-                            ...mySelectedSocietyDrafts.map((d) => ({
-                                label: d.title,
-                                value: d.id,
-                            }))
-                            ]}
-                            {...register("parentDraftId")}
-                        />
-                    )}
+                            {/* Date */}
+                            <FormField
+                                control={form.control}
+                                name="proposedDate"
+                                rules={{ required: "Proposed date is required" }}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Proposed Date</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                                <Input
+                                                    type="date"
+                                                    className="pl-10 dark:[color-scheme:dark]"
+                                                    {...field}
+                                                />
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                    {/* Submit */}
-                    <Button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full rounded-xl bg-purple-600 py-2 text-white hover:bg-purple-700 transition"
-                    >
-                        {isSubmitting ? "Creating Draft..." : "Create Draft"}
-                    </Button>
-                </form>
-            </div>
+                            {/* Location */}
+                            <FormField
+                                control={form.control}
+                                name="proposedLocation"
+                                rules={{ required: "Location is required" }}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Proposed Location</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                                <Input
+                                                    placeholder="Eg: Main Auditorium"
+                                                    className="pl-10"
+                                                    {...field}
+                                                />
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Parent Draft */}
+                            {selectedSocietyId && mySelectedSocietyDrafts.length > 0 && (
+                                <FormField
+                                    control={form.control}
+                                    name="parentDraftId"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Parent Draft</FormLabel>
+                                            <FormControl>
+                                                <select className={selectClass} {...field}>
+                                                    <option value="">Start New Draft (No Parent)</option>
+                                                    {mySelectedSocietyDrafts.map((d) => (
+                                                        <option
+                                                            key={d.id}
+                                                            value={d.id}
+                                                            className="bg-background text-foreground"
+                                                        >
+                                                            {d.title}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            )}
+
+                            {/* Submit */}
+                            <Button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full cursor-pointer bg-purple-600 text-white hover:bg-purple-700"
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Creating Draft...
+                                    </>
+                                ) : (
+                                    "Create Draft"
+                                )}
+                            </Button>
+                        </form>
+                    </Form>
+                </CardContent>
+            </Card>
         </div>
     );
 }

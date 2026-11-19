@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMyRegisterations, registerEvent, cancelRegistration } from "../api/eventRegsiter.api";
 import { EventCard } from "../components";
+import { Ticket,Loader2 } from "lucide-react";
 export default function MyEvents() {
     const [myRegistrations, setMyRegistrations] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -74,25 +75,26 @@ export default function MyEvents() {
 
             {/* LOADING */}
             {loading && (
-                <div className="flex justify-center items-center min-h-[50vh] text-gray-500">
-                    Loading your events...
+                <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-muted-foreground">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <p className="text-sm">Loading your events...</p>
                 </div>
             )}
 
             {/* EMPTY STATE */}
             {!loading && myRegistrations.length === 0 && (
-                <div className="flex justify-center items-center min-h-[60vh] px-4">
-                    <div className="max-w-md text-center rounded-2xl border bg-white p-8 shadow-sm">
+                <div className="flex min-h-[60vh] items-center justify-center px-4">
+                    <div className="max-w-md rounded-2xl border bg-card p-8 text-center shadow-sm">
 
-                        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                            🎟️
+                        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-300">
+                            <Ticket className="h-7 w-7" />
                         </div>
 
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                        <h2 className="mb-2 text-2xl font-bold text-foreground">
                             No Events Registered
                         </h2>
 
-                        <p className="text-sm text-gray-500 mb-6">
+                        <p className="text-sm text-muted-foreground">
                             You haven’t registered for any events yet.
                             Explore events and join the ones you like.
                         </p>
@@ -102,7 +104,7 @@ export default function MyEvents() {
 
             {/* EVENT LIST */}
             {!loading && myRegistrations.length > 0 && (
-                <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4">
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
                     {myRegistrations.map((event) => (
                         <EventCard
                             key={event.event_id}

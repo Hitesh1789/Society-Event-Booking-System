@@ -55,21 +55,21 @@ export default function Dashboard() {
       value: userData?.societies?.length,
       subtitle: "Active memberships",
       icon: Users,
-      color: "text-purple-600 bg-purple-100"
+      color: "text-purple-600 bg-purple-100 dark:text-purple-300 dark:bg-purple-500/20"
     },
     {
       title: "Upcoming Events",
       value: events?.length,
       subtitle: "Across all societies",
       icon: CalendarDays,
-      color: "text-blue-600 bg-blue-100"
+      color: "text-blue-600 bg-blue-100 dark:text-blue-300 dark:bg-blue-500/20"
     },
     {
       title: "My Registrations",
       value: myRegisterations,
       subtitle: "Events registered",
       icon: ClipboardCheck,
-      color: "text-green-600 bg-green-100"
+      color: "text-green-600 bg-green-100 dark:text-green-300 dark:bg-green-500/20"
     },
   ]
 
@@ -77,8 +77,8 @@ export default function Dashboard() {
     <div className="space-y-6 p-2">
       {/* Greeting */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Welcome back {userData?.profile.name}👋</h1>{/*change */}
-        <p className="text-gray-500 mt-1">Here’s your activity overview</p>
+        <h1 className="text-3xl font-bold text-foreground">Welcome back {userData?.profile.name}👋</h1>{/*change */}
+        <p className="text-muted-foreground mt-1">Here’s your activity overview</p>
       </div>
 
       {/* Stats Grid */}
@@ -89,9 +89,9 @@ export default function Dashboard() {
             className="p-3 text-center rounded-2xl shadow-sm hover:shadow-md transition-shadow border"
           >
             <div className="flex flex-col gap-2 items-center">
-              <span className="text-gray-500 text-sm">{stat.title}</span>
-              <span className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</span>
-              <span className="text-gray-400 text-xs mt-1">{stat.subtitle}</span>
+              <span className="text-muted-foreground text-sm">{stat.title}</span>
+              <span className="text-3xl font-bold text-foreground mt-1">{stat.value}</span>
+              <span className="text-muted-foreground text-xs mt-1">{stat.subtitle}</span>
               <span
                 className={`h-12 w-12 rounded-xl flex items-center justify-center ${stat.color}`}
               >
@@ -106,11 +106,11 @@ export default function Dashboard() {
               className="p-3 text-center rounded-2xl shadow-sm hover:shadow-md transition-shadow border"
             >
               <div className="flex flex-col gap-2 items-center">
-                <span className="text-gray-500 text-sm">Pending Approvals</span>
-                <span className="text-3xl font-bold text-gray-900 mt-1">{userData?.pendingApprovals.length}</span>
-                <span className="text-gray-400 text-xs mt-1">Awaiting your input</span>
+                <span className="text-muted-foreground text-sm">Pending Approvals</span>
+                <span className="text-3xl font-bold text-foreground mt-1">{userData?.pendingApprovals.length}</span>
+                <span className="text-muted-foreground text-xs mt-1">Awaiting your input</span>
                 <span
-                  className={`h-12 w-12 rounded-xl flex items-center justify-center text-yellow-600 bg-yellow-100`}
+                  className={`h-12 w-12 rounded-xl flex items-center justify-center text-yellow-600 bg-yellow-100 dark:text-yellow-300 dark:bg-yellow-500/20`}
                 >
                   <MessageSquareMore className="h-6 w-6" />
                 </span>
@@ -124,11 +124,11 @@ export default function Dashboard() {
               className="p-3 text-center rounded-2xl shadow-sm hover:shadow-md transition-shadow border"
             >
               <div className="flex flex-col gap-2 items-center">
-                <span className="text-gray-500 text-sm">Pending Drafts</span>
-                <span className="text-3xl font-bold text-gray-900 mt-1">{userData.pendingDrafts.length}</span>
-                <span className="text-gray-400 text-xs mt-1">Awaiting your input</span>
+                <span className="text-muted-foreground text-sm">Pending Drafts</span>
+                <span className="text-3xl font-bold text-foreground mt-1">{userData.pendingDrafts.length}</span>
+                <span className="text-muted-foreground text-xs mt-1">Awaiting your input</span>
                 <span
-                  className={`h-12 w-12 rounded-xl flex items-center justify-center text-yellow-600 bg-yellow-100`}
+                  className={`h-12 w-12 rounded-xl flex items-center justify-center text-yellow-600 bg-yellow-100 dark:text-yellow-300 dark:bg-yellow-500/20`}
                 >
                   <SquarePen className="h-6 w-6" />
                 </span>

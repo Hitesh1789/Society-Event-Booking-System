@@ -1,16 +1,39 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Button,Input } from "../components";
+import { Lock, KeyRound, Eye, EyeOff, Loader2 } from "lucide-react";
 import { changeUserPassword } from "../api/user.api";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    CardContent,
+} from "@/components/ui/card";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
 
 export default function ChangePassword() {
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-    } = useForm();
-    
+    const form = useForm({
+        defaultValues: {
+            oldpass: "",
+            newpass: "",
+        },
+    });
+    const { isSubmitting } = form.formState;
+
+    const [showOld, setShowOld] = useState(false);
+    const [showNew, setShowNew] = useState(false);
+
     const navigate = useNavigate();
 
     const submit = async (data) => {
@@ -29,62 +52,110 @@ export default function ChangePassword() {
         }
     };
 
-
     return (
-        <div className="flex justify-center items-center min-h-[80vh] px-4">
-            <div className="w-full max-w-md rounded-2xl border p-6 shadow-sm bg-white">
-                <h1 className="text-2xl font-semibold text-purple-600 mb-4">
-                    Update Password
-                </h1>
-
-                <p className="text-sm text-muted-foreground mb-6">
-                    Fill in the password details for updating.
-                </p>
-
-                <form onSubmit={handleSubmit(submit)} className="space-y-4">
-                    {/* Event Name */}
-                    <div>
-                        <Input
-                            label="Old password"
-                            placeholder="Enter old password"
-                            {...register("oldpass", { required: "Old password is required" })}
-
-                        />
-                        {errors.oldpass && (
-                            <p className="text-sm text-red-500 mt-1">
-                                {errors.oldpass.message}
-                            </p>
-                        )}
+        <div className="flex min-h-[80vh] items-center justify-center px-4 py-10">
+            <Card className="w-full max-w-md shadow-lg">
+                <CardHeader className="space-y-1 text-center">
+                    <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-600 text-white shadow-md">
+                        <KeyRound className="h-6 w-6" />
                     </div>
+                    <CardTitle className="text-2xl font-bold">
+                        Update Password
+                    </CardTitle>
+                    <CardDescription>
+                        Fill in the password details for updating.
+                    </CardDescription>
+                </CardHeader>
 
-                    {/* Description */}
-                    <div>
-                        <Input
-                            label="New Password"
-                            placeholder="Enter new password"
-                            {...register("newpass", {
-                                required: "New Password is required",
-                            })}
-                        />
-                        {errors.newpass && (
-                            <p className="text-sm text-red-500 mt-1">
-                                {errors.newpass.message}
-                            </p>
-                        )}
-                    </div>
+                <CardContent>
+                    <Form {...form}>
+                        <form
+                            onSubmit={form.handleSubmit(submit)}
+                            className="space-y-5"
+                        >
+                            {/* Old password */}
+                            <FormField
+                                control={form.control}
+                                name="oldpass"
+                                rules={{ required: "Old password is required" }}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Old Password</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                                <Input
+                                                    type={showOld ? "text" : "password"}
+                                                    placeholder="Enter old password"
+                                                    className="pl-10 pr-10"
+                                                    {...field}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowOld((prev) => !prev)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                                                    aria-label={showOld ? "Hide password" : "Show password"}
+                                                >
+                                                    {showOld ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                                </button>
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
+                            {/* New password */}
+                            <FormField
+                                control={form.control}
+                                name="newpass"
+                                rules={{ required: "New Password is required" }}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>New Password</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                                <Input
+                                                    type={showNew ? "text" : "password"}
+                                                    placeholder="Enter new password"
+                                                    className="pl-10 pr-10"
+                                                    {...field}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowNew((prev) => !prev)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                                                    aria-label={showNew ? "Hide password" : "Show password"}
+                                                >
+                                                    {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                                </button>
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                    {/* Submit */}
-                    <Button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full rounded-xl bg-purple-600 hover:bg-purple-700 p-2 text-white-700"
-                    >
-                        {isSubmitting ? "Updating..." : "Update Password"}
-                    </Button>
-                </form>
-            </div>
+                            {/* Submit */}
+                            <Button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full cursor-pointer bg-purple-600 text-white hover:bg-purple-700"
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Updating...
+                                    </>
+                                ) : (
+                                    "Update Password"
+                                )}
+                            </Button>
+                        </form>
+                    </Form>
+                </CardContent>
+            </Card>
         </div>
     );
-    
 }

@@ -22,19 +22,19 @@ export default function DraftCard({ draft }) {
   const statusConfig = {
     pending: {
       label: "Pending Approval",
-      className: "bg-yellow-100 text-yellow-700",
+      className: "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300",
     },
     approved: {
       label: "Approved",
-      className: "bg-green-100 text-green-700",
+      className: "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300",
     },
     rejected: {
       label: "Rejected",
-      className: "bg-red-100 text-red-700",
+      className: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300",
     },
     changes_requested: {
       label: "Changes Requested",
-      className: "bg-blue-100 text-blue-700",
+      className: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
     },
   };
 
@@ -53,10 +53,10 @@ export default function DraftCard({ draft }) {
 
   if (!draftInfo) {
     return (
-      <div className="rounded-2xl border bg-white p-6 shadow-sm animate-pulse">
-        <div className="h-4 w-1/3 bg-gray-200 rounded mb-3" />
-        <div className="h-3 w-full bg-gray-200 rounded mb-2" />
-        <div className="h-3 w-5/6 bg-gray-200 rounded" />
+      <div className="rounded-2xl border bg-card p-6 shadow-sm animate-pulse">
+        <div className="h-4 w-1/3 bg-muted rounded mb-3" />
+        <div className="h-3 w-full bg-muted rounded mb-2" />
+        <div className="h-3 w-5/6 bg-muted rounded" />
       </div>
     );
   }
@@ -64,10 +64,10 @@ export default function DraftCard({ draft }) {
   const status = statusConfig[draftInfo.status];
 
   return (
-    <div className="rounded-2xl border bg-white p-6 shadow-sm hover:shadow-lg transition-all">
+    <div className="rounded-2xl border bg-card text-card-foreground p-6 shadow-sm hover:shadow-lg transition-all">
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
-        <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">
+        <h2 className="text-lg font-semibold text-foreground line-clamp-2">
           {draftInfo.title}
         </h2>
 
@@ -79,7 +79,7 @@ export default function DraftCard({ draft }) {
       </div>
 
       {/* Description */}
-      <p className="text-sm text-gray-600 mt-2 line-clamp-3">
+      <p className="text-sm text-muted-foreground mt-2 line-clamp-3">
         {draftInfo.description}
       </p>
 
@@ -87,7 +87,7 @@ export default function DraftCard({ draft }) {
       <div className="my-4 border-t" />
 
       {/* Info */}
-      <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
+      <div className="grid grid-cols-2 gap-4 text-sm text-foreground">
         <div className="flex items-center gap-2">
           <span><span className="font-medium">Society: </span>{draft.society_name}</span>
         </div>
@@ -131,7 +131,7 @@ export default function DraftCard({ draft }) {
             <DialogTitle>President Remarks</DialogTitle>
           </DialogHeader>
 
-          <div className="text-sm text-gray-700 leading-relaxed">
+          <div className="text-sm text-foreground leading-relaxed">
             {remarks}
           </div>
         </DialogContent>

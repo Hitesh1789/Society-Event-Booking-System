@@ -20,7 +20,7 @@ export default function DraftHistory() {
 
 
     useEffect(() => {
-        if (draftHistory.length>0) return;
+        if (draftHistory.length > 0) return;
         const fetchDraftHistory = async () => {
             try {
                 const res = await getDraftHistory(draftId);
@@ -55,7 +55,7 @@ export default function DraftHistory() {
 
     if (!draftHistory?.length) {
         return (
-            <div className="rounded-xl bg-white p-6 text-center text-gray-500 shadow">
+            <div className="rounded-xl border bg-card p-6 text-center text-muted-foreground shadow">
                 No draft history available
             </div>
         );

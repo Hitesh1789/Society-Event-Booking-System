@@ -26,6 +26,7 @@ import RegisteredUsers from './pages/RegisteredUsers.jsx'
 import EventSummary from './pages/EventSummary.jsx'
 import UpdateProfile from './pages/UpdateProfile.jsx'
 import ChangePassword from './pages/ChangePassword.jsx'
+import { ThemeProvider } from './components/index.js'
 
 const router = createBrowserRouter([
   {
@@ -117,8 +118,8 @@ const router = createBrowserRouter([
         )
       },
       {
-        path:'/drafts/:draftId',
-        element:(
+        path: '/drafts/:draftId',
+        element: (
           <Protected authentication>
             <Draft />
           </Protected>
@@ -128,7 +129,7 @@ const router = createBrowserRouter([
         path: '/create-draft',
         element: (
           <Protected authentication>
-            <DraftForm/>
+            <DraftForm />
           </Protected>
         )
       },
@@ -136,31 +137,31 @@ const router = createBrowserRouter([
         path: '/event-approval',
         element: (
           <Protected authentication>
-            <EventApproval/>
+            <EventApproval />
           </Protected>
         )
       },
       {
-        path:'/draft-history/:draftId',
-        element:(
+        path: '/draft-history/:draftId',
+        element: (
           <Protected authentication>
-            <DraftHistory/>
+            <DraftHistory />
           </Protected>
         )
       },
       {
-        path:'/update-event/:eventId',
-        element:(
+        path: '/update-event/:eventId',
+        element: (
           <Protected authentication>
             <UpdateEvent />
           </Protected>
         )
       },
       {
-        path:'/view-registered-users/:eventId',
-        element:(
+        path: '/view-registered-users/:eventId',
+        element: (
           <Protected authentication>
-            <RegisteredUsers/>
+            <RegisteredUsers />
           </Protected>
         )
       },
@@ -173,18 +174,18 @@ const router = createBrowserRouter([
         )
       },
       {
-        path:'/change-password',
-        element:(
+        path: '/change-password',
+        element: (
           <Protected authentication>
-            <ChangePassword/>
+            <ChangePassword />
           </Protected>
         )
       },
       {
-        path:'/update-profile',
-        element:(
+        path: '/update-profile',
+        element: (
           <Protected authentication>
-            <UpdateProfile/>
+            <UpdateProfile />
           </Protected>
         )
       },
@@ -195,7 +196,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={Store}>
-      <RouterProvider router={router} />
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </Provider>
   </StrictMode>,
 )

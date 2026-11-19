@@ -23,13 +23,13 @@ export default function EventApproval() {
 
   return (
     <div className="min-h-[80vh] p-6">
-      <h1 className="text-3xl font-bold text-purple-600 mb-6">
+      <h1 className="text-2xl font-semibold mb-4">
         Pending Event Approvals
       </h1>
 
       {/* Empty State */}
       {mySocietyPendingApprovals.length === 0 && (
-        <div className="rounded-xl bg-white p-6 text-center text-gray-500 shadow">
+        <div className="rounded-xl border bg-card p-6 text-center text-muted-foreground shadow">
           🎉 No pending drafts to approve
         </div>
       )}

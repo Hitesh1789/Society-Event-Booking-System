@@ -10,6 +10,8 @@ import Select from "./Select";
 import DraftCard from "./DraftCard"
 import DraftForm from "./DraftForm"
 import ApprovalCard from "./ApprovalCard";
+import ThemeProvider from "./ThemeProvider";
+import ToggleTheme from "./ToggleTheme";
 export {
     Signup,
     Button,
@@ -22,5 +24,7 @@ export {
     Select,
     DraftCard,
     DraftForm,
-    ApprovalCard
+    ApprovalCard,
+    ThemeProvider,
+    ToggleTheme
 }

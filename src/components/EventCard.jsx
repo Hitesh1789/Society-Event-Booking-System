@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { addEvents, clearEvents } from "../store/eventSlice";
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Calendar, MapPin, Users, Eye, Pencil, XCircle, CheckCircle2, Star, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function EventCard({
@@ -36,7 +36,7 @@ export default function EventCard({
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
   const [open, setOpen] = useState(false)
-  const [rating, setRating] = useState("4")
+  const [rating, setRating] = useState(1)
   const [comment, setComment] = useState("")
   const [isMember, setIsMember] = useState(false);
   const [isLeadOrPresident, setIsLeadOrPresident] = useState(false);
@@ -96,37 +96,41 @@ export default function EventCard({
   }, [eventId, userData?.societies]);
 
   const statusStyle = {
-    published: "bg-blue-100 text-blue-700",
-    completed: "bg-green-100 text-green-700",
-    cancelled: "bg-red-100 text-red-700",
+    published: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
+    completed: "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300",
+    cancelled: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300",
+  }
+
+  const refreshEvents = async () => {
+    const fetchedEvents = await getAllUpcomingEvents();
+    if (fetchedEvents.data.data) {
+      dispatch(addEvents({ events: fetchedEvents.data.data }))
+    }
+    else {
+      dispatch(clearEvents())
+    }
   }
 
   return (
     <>
-      <Card className="inline-flex flex-col 
-    gap-3
-    rounded-xl 
-    border 
-    bg-white 
-    p-4 
-    shadow-sm 
-    hover:shadow-md 
-    transition-all">
+      <Card className="group flex h-full w-full flex-col gap-4 rounded-2xl border bg-card p-4 text-card-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg sm:p-5">
 
         {/* Header */}
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <h2 className="text-base font-semibold text-gray-900 leading-tight">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="line-clamp-2 text-base font-semibold leading-tight text-foreground sm:text-lg">
               {title}
             </h2>
-            <p className="text-xs text-muted-foreground mt-1">
-              {societyName}
-            </p>
+            {societyName && (
+              <p className="mt-1 truncate text-xs text-muted-foreground sm:text-sm">
+                {societyName}
+              </p>
+            )}
           </div>
 
           {status && (
             <Badge
-              className={`capitalize px-2 py-0.5 text-xs rounded-md ${statusStyle[status]}`}
+              className={`shrink-0 rounded-md border-0 px-2 py-0.5 text-xs capitalize ${statusStyle[status]}`}
             >
               {status}
             </Badge>
@@ -134,172 +138,174 @@ export default function EventCard({
         </div>
 
         {/* Meta Info */}
-        <div className="mt-3 space-y-1 text-sm text-gray-600">
-          {date && (
-            <div className="flex items-center gap-2">
-              <Calendar size={13} />
-              <span>{date}</span>
-            </div>
-          )}
+        {(date || venue) && (
+          <div className="space-y-2 rounded-xl bg-muted/50 p-3 text-sm text-muted-foreground">
+            {date && (
+              <div className="flex items-center gap-2">
+                <Calendar size={14} className="shrink-0 text-purple-600 dark:text-purple-400" />
+                <span className="truncate">{date}</span>
+              </div>
+            )}
 
-          {venue && (
-            <div className="flex items-center gap-2">
-              <MapPin size={13} />
-              <span>{venue}</span>
-            </div>
-          )}
-        </div>
+            {venue && (
+              <div className="flex items-center gap-2">
+                <MapPin size={14} className="shrink-0 text-purple-600 dark:text-purple-400" />
+                <span className="truncate">{venue}</span>
+              </div>
+            )}
+          </div>
+        )}
 
         {registrationStatus && (
           <Badge
             variant="secondary"
-            className="w-fit text-xs rounded-md"
+            className="w-fit rounded-md text-xs capitalize"
           >
             {registrationStatus}
           </Badge>
         )}
 
+        {/* Actions: pushed to the bottom so cards in a grid line up */}
+        <div className="mt-auto flex flex-col gap-3">
 
-        {/* Actions */}
-        <div className="flex flex-col gap-2 pt-1">
-          {showRegister && status !== "completed" && (
+          {/* Main actions */}
+          <div className="flex flex-wrap gap-2">
+            {showRegister && status !== "completed" && (
+              <Button
+                size="sm"
+                className="min-w-[110px] flex-1 rounded-lg"
+                onClick={() => onRegister(eventId)}
+              >
+                Register
+              </Button>
+            )}
+
+            {showCancelRegister && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="min-w-[110px] flex-1 rounded-lg"
+                onClick={() => onCancel(eventId)}
+              >
+                Cancel
+              </Button>
+            )}
+
             <Button
               size="sm"
-              className="rounded-lg px-3"
-              onClick={() => onRegister(eventId)}
+              variant="secondary"
+              className="min-w-[110px] flex-1 rounded-lg"
+              onClick={() => navigate(`/event/${eventId}`)}
             >
-              Register
+              <Eye size={14} className="mr-1" />
+              View Details
             </Button>
+          </div>
+
+          {/* Extra Buttons */}
+          {(showFeedbackButton || showEventSummaryButton) && (
+            <div className="flex flex-wrap gap-2">
+              {showFeedbackButton && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="min-w-[110px] flex-1 rounded-lg"
+                  onClick={() => setOpen(true)}
+                >
+                  <Star size={14} className="mr-1" />
+                  Give Feedback
+                </Button>
+              )}
+
+              {showEventSummaryButton && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="min-w-[110px] flex-1 rounded-lg"
+                  onClick={() => navigate(`/event-summary/${eventId}`)}
+                >
+                  <FileText size={14} className="mr-1" />
+                  Event Summary
+                </Button>
+              )}
+            </div>
           )}
 
-          {showCancelRegister && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="rounded-lg px-3"
-              onClick={() => onCancel(eventId)}
-            >
-              Cancel
-            </Button>
+          {/* Member Actions */}
+          {isMember && (
+            <div className="border-t pt-3">
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full rounded-lg"
+                onClick={() => navigate(`/view-registered-users/${eventId}`)}
+              >
+                <Users size={14} className="mr-1" />
+                Users
+              </Button>
+            </div>
           )}
 
-          <Button
-            size="sm"
-            variant="secondary"
-            className="rounded-lg px-3"
-            onClick={() => navigate(`/event/${eventId}`)}
-          >
-            View Details
-          </Button>
+          {/* Lead / President Actions */}
+          {isLeadOrPresident && (
+            <div className="flex flex-wrap gap-2 border-t pt-3">
+              <Button
+                size="sm"
+                variant="outline"
+                className="min-w-[90px] flex-1 rounded-lg"
+                onClick={() => navigate(`/update-event/${eventId}`)}
+              >
+                <Pencil size={14} className="mr-1" />
+                Update
+              </Button>
+
+              <Button
+                size="sm"
+                variant="destructive"
+                className="min-w-[90px] flex-1 rounded-lg"
+                onClick={async () => {
+                  try {
+                    await cancelEvent(eventId)
+                    toast.success("Event cancelled Successfully", {
+                      duration: 2000,
+                    });
+                    await refreshEvents();
+                  } catch (error) {
+                    toast.error("Something went wrong! ", {
+                      duration: 2000,
+                      description: error?.response?.data?.message || "Something went wrong. Try again."
+                    })
+                  }
+                }}
+              >
+                <XCircle size={14} className="mr-1" />
+                Cancel
+              </Button>
+
+              <Button
+                size="sm"
+                className="min-w-[90px] flex-1 rounded-lg bg-green-600 text-white hover:bg-green-700"
+                onClick={async () => {
+                  try {
+                    await markEventComplete(eventId);
+                    toast.success("Marked as completed");
+                    await refreshEvents();
+                  } catch {
+                    toast.error("Action failed");
+                  }
+                }}
+              >
+                <CheckCircle2 size={14} className="mr-1" />
+                Complete
+              </Button>
+            </div>
+          )}
         </div>
-
-        {/* Member Actions */}
-        {isMember && (
-          <div className="mt-4 text-center border-t pt-3">
-            <Button
-              size="sm"
-              variant="outline"
-              className="rounded-lg px-3"
-              onClick={() => navigate(`/view-registered-users/${eventId}`)}
-            >
-              <Users size={14} className="mr-1" />
-              Users
-            </Button>
-          </div>
-        )}
-
-        {/* Lead / President Actions */}
-        {isLeadOrPresident && (
-          <div className="flex flex-wrap gap-2 pt-2 border-t justify-center">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => navigate(`/update-event/${eventId}`)}
-            >
-              Update
-            </Button>
-
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={async () => {
-                try {
-                  await cancelEvent(eventId)
-                  toast.success("Event cancelled Successfully", {
-                    duration: 2000,
-                  });
-                  const fetchedEvents = await getAllUpcomingEvents();
-                  if (fetchedEvents.data.data) {
-                    dispatch(addEvents({ events: fetchedEvents.data.data }))
-                  }
-                  else {
-                    dispatch(clearEvents())
-                  }
-
-                } catch (error) {
-                  toast.error("Something went wrong! ", {
-                    duration: 2000,
-                    description: error?.response?.data?.message || "Something went wrong. Try again."
-                  })
-                }
-              }
-              }
-            >
-              Cancel
-            </Button>
-
-            <Button
-              size="sm"
-              className="bg-green-600 hover:bg-green-700"
-              onClick={async () => {
-                try {
-                  await markEventComplete(eventId);
-                  toast.success("Marked as completed");
-                  const fetched = await getAllUpcomingEvents();
-                  fetched.data.data
-                    ? dispatch(addEvents({ events: fetched.data.data }))
-                    : dispatch(clearEvents());
-                } catch {
-                  toast.error("Action failed");
-                }
-              }}
-            >
-              Complete
-            </Button>
-          </div>
-        )}
-
-        {/* Extra Buttons */}
-        {showFeedbackButton && (
-          <div className="mt-1">
-            <Button
-              size="sm"
-              variant="secondary"
-              className="w-full rounded-lg"
-              onClick={() => setOpen(true)}
-            >
-              Give Feedback
-            </Button>
-          </div>
-        )}
-
-        {showEventSummaryButton && (
-          <div>
-            <Button
-              size="sm"
-              variant="secondary"
-              className="w-full rounded-lg"
-              onClick={() => navigate(`/event-summary/${eventId}`)}
-            >
-              Event Summary
-            </Button>
-          </div>
-        )}
       </Card>
 
-
+      {/* Feedback Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="rounded-xl">
+        <DialogContent className="w-[calc(100%-2rem)] rounded-xl sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Rate this Event</DialogTitle>
           </DialogHeader>
@@ -312,7 +318,7 @@ export default function EventCard({
             }}
           />
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
 
           <Input
             placeholder="Write your feedback..."
@@ -327,15 +333,13 @@ export default function EventCard({
             <Button
               onClick={handleFeedback}
               disabled={loading}
-              className="w-full bg-purple-600 hover:bg-purple-700"
+              className="w-full bg-purple-600 text-white hover:bg-purple-700"
             >
               {loading ? "Submitting..." : "Submit Feedback"}
             </Button>
           </DialogFooter>
         </DialogContent>
-
       </Dialog>
     </>
-
   );
 }

@@ -1,12 +1,13 @@
 ﻿import { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from "react-router-dom"
 import { login } from "./store/authSlice"
-import { useDispatch } from 'react-redux';
-import { SideBar } from './components/index';
+import { useDispatch, useSelector } from 'react-redux';
+import { SideBar, ToggleTheme } from './components/index';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { useSelector } from "react-redux";
+import { Button } from "@/components/ui/button"
 import { getUser } from './api/user.api';
 import { Toaster } from 'sonner';
+import { Loader2 } from "lucide-react";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -31,48 +32,50 @@ function App() {
   return (
     <>
       <Toaster richColors position="top-right" />
-      {loading ? (<div className="flex items-center justify-center h-screen">
-        <div className="font-medium text-2xl">
-          <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+
+      {loading ? (
+        <div className="flex min-h-screen items-center justify-center">
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
         </div>
-      </div>) :
-      (<div className='flex w-full'>
+      ) : (
         <SidebarProvider>
           <SideBar />
-          <main className="relative flex-1 p-2">
 
-            {/* TOP BAR */}
-            <div className="flex justify-between items-center absolute top-2 left-2 right-2 ">
+          <main className="flex min-w-0 flex-1 flex-col">           
+            <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b bg-background/80 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">           
+              <SidebarTrigger className="cursor-pointer" />
 
-              {/* LEFT SIDE — SIDEBAR TRIGGER */}
-              <SidebarTrigger className="cursor-pointer p-5" />
+              <div className="flex items-center gap-2">
+                <ToggleTheme />
 
-              {/* RIGHT SIDE — AUTH BUTTONS */}
-              {!authStatus && (
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => navigate("/login")}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-md cursor-pointer">
-                    Login
-                  </button>
-                  <button
-                    onClick={() => navigate("/signup")}
-                    className="px-4 py-2 bg-purple-500 text-white rounded-md cursor-pointer">
-                    Signup
-                  </button>
-                </div>
-              )}
+                {!authStatus && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="cursor-pointer"
+                      onClick={() => navigate("/login")}
+                    >
+                      Login
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="cursor-pointer"
+                      onClick={() => navigate("/signup")}
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
+              </div>
+            </header>
 
-            </div>
-
-            {/* MAIN CONTENT — Push down below top bar */}
-            <div className="mt-10">
+            <div className="flex-1 p-4 md:p-6">
               <Outlet />
             </div>
           </main>
         </SidebarProvider>
-      </div>)}
-    
+      )}
     </>
   )
 }

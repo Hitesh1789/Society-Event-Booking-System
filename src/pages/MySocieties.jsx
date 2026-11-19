@@ -4,7 +4,7 @@ import { MySocietyCard } from "../components/index.js";
 import { getSocieties } from "../api/society.api";
 import { useDispatch } from "react-redux";
 import { addSocieties, clearSocieties } from "../store/societiesSlice";
-
+import { Users } from "lucide-react";
 export default function MySocieties() {
     const userData = useSelector((state) => state.auth.userData)
     const societies = useSelector((state) => state.society.societies)
@@ -44,11 +44,19 @@ export default function MySocieties() {
     return (
 
         (mySocieties.length == 0) ? (
-            <div className="flex flex-wrap">
-                <div className="p-2 w-full">
-                    <h1 className="text-xl text-gray-500 text-center">
-                        No society memberships found
-                    </h1>
+            <div className="flex min-h-[50vh] items-center justify-center px-4">
+                <div className="max-w-md rounded-2xl border bg-card p-8 text-center shadow-sm">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-300">
+                        <Users/>
+                    </div>
+
+                    <h2 className="mb-2 text-2xl font-bold text-foreground">
+                        No Society Memberships
+                    </h2>
+
+                    <p className="text-sm text-muted-foreground">
+                        You haven’t joined any societies yet.
+                    </p>
                 </div>
             </div>
         ) : (
