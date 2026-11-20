@@ -89,7 +89,7 @@ export default function EventCard({
 
       if (society) {
         setIsLeadOrPresident(["lead", "president"].includes(society.society_role));
-        setIsMember(["memeber", "lead", "president"].includes(society.society_role));
+        setIsMember(["member", "lead", "president"].includes(society.society_role));
       }
     })()
 

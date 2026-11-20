@@ -1,11 +1,14 @@
 import { useSelector, useDispatch } from "react-redux"
-import { useEffect, useCallback, useState } from "react"
+import { useEffect, useCallback, useState, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 import { SocietyCard } from "../components"
 import { addSocieties, clearSocieties } from "../store/societiesSlice"
 import { getSocieties, getSocietyInfo } from "../api/society.api"
 import { getUser } from "../api/user.api.js";
 import { updateUser } from "../store/authSlice.js"
+import { Search, Loader2,X } from "lucide-react";
+import { Input } from "../components/ui/input.jsx"
+import { Button } from "../components/ui/button.jsx"
 
 export default function AllSocieties() {
     const societies = useSelector((state) => state.society.societies)
@@ -13,6 +16,8 @@ export default function AllSocieties() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState("");
+
     const isMember = (societyId) => {
         return userData?.societies?.some(
             (s) => Number(s.society_id) === Number(societyId)
@@ -22,12 +27,12 @@ export default function AllSocieties() {
     const refreshSocieties = useCallback(async () => {
         try {
             setLoading(true);
-            
+
             const [socRes, userRes] = await Promise.all([
                 getSocieties(),
                 getUser() // API that returns updated user
             ])
-            
+
             dispatch(clearSocieties())
             dispatch(addSocieties({ societies: socRes.data.data.societies }))
             dispatch(updateUser({ newUserData: userRes.data.data }))
@@ -50,6 +55,15 @@ export default function AllSocieties() {
             return null
         }
     }
+
+    // society names that contain the typed text (ignores case and extra spaces)
+    const filteredSocities = useMemo(() => {
+        const text = search.trim().toLowerCase();
+        if (!text) return societies;
+        return societies.filter((s) => s.name?.toLowerCase().includes(text));
+    }, [search, societies])
+
+    const clearSearch = () => setSearch("");
 
     return (
         <div className="flex">
@@ -107,10 +121,58 @@ export default function AllSocieties() {
                     </div>
                 )}
 
+                {/* FILTERS */}
+                {!loading && societies.length > 0 && (
+                    <div className="mb-6 space-y-3">
+                        <div className="flex flex-col gap-3 sm:flex-row">
+                            <div className="relative flex-1">
+                                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                <Input
+                                    placeholder="Search by society name..."
+                                    className="pl-10"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                />
+                            </div>
+
+                            {search && (
+                                <Button variant="outline" className="cursor-pointer" onClick={clearSearch}>
+                                    <X className="mr-1 h-4 w-4" />
+                                    Clear
+                                </Button>
+                            )}
+                        </div>
+
+                        <p className="text-xs text-muted-foreground">
+                            Showing {filteredSocities.length} of {societies.length} societies
+                        </p>
+                    </div>
+                )}
+
+
+                {/* NO MATCH STATE */}
+                {!loading && societies.length > 0 && filteredSocities.length === 0 && (
+                    <div className="flex min-h-[40vh] items-center justify-center px-4">
+                        <div className="max-w-md rounded-2xl border bg-card p-8 text-center shadow-sm">
+                            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-300">
+                                <Search className="h-7 w-7" />
+                            </div>
+                            <h2 className="mb-2 text-xl font-bold text-foreground">No societies found</h2>
+                            <p className="mb-4 text-sm text-muted-foreground">
+                                Try a different society name.
+                            </p>
+                            <Button variant="outline" className="cursor-pointer" onClick={clearSearch}>
+                                Clear search
+                            </Button>
+                        </div>
+                    </div>
+                )}
+
+
                 {/* SOCIETY LIST */}
                 {!loading && societies.length > 0 && (
                     <div className="flex flex-wrap gap-4">
-                        {societies.map((society) => (
+                        {filteredSocities.map((society) => (
                             <SocietyCard
                                 key={society.id}
                                 socId={society.id}
